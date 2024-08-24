@@ -2,6 +2,7 @@ package com.test.trainingprogrambackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.test.trainingprogrambackend.entity.Course;
+import com.test.trainingprogrambackend.entity.CourseClassDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -33,5 +34,5 @@ public interface CourseMapper {
             +"<if test='selectedNumber!=null'> AND selectedNumber=#{selectedNumber}</if>"
             +"<if test='isFull!=null'> AND isFull=#{isFull}</if>"
             +"</script>")
-    List<Course> selectByConditions(String code,String name,Integer credit,String type,String deptName,String classNumber,String teacherName,Integer capacity,Integer selectedNumber,Integer isFull);
+    List<CourseClassDTO> selectByConditions(String code, String name, Integer credit, String type, String deptName, String classNumber, String teacherName, Integer capacity, Integer selectedNumber, Integer isFull);
 }

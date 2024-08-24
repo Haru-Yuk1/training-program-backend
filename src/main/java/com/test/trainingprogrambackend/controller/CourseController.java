@@ -2,6 +2,7 @@ package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.entity.Course;
 import com.test.trainingprogrambackend.entity.CourseClass;
+import com.test.trainingprogrambackend.entity.CourseClassDTO;
 import com.test.trainingprogrambackend.mapper.CourseMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,12 +45,13 @@ public class CourseController {
         return courses;
     }
 
-    @ApiOperation("通过条件筛选课程")
+    @ApiOperation("通过条件筛选课程(这个包括了courseclass表的信息)")
     @GetMapping("/course/getByCondition")
-    public List<Course> getCourseByCondition(String code,String name,Integer credit,String type,String deptName,String classNumber,String teacherName,Integer capacity,Integer selectedNumber,Integer isFull) {
-        List<Course> courses=courseMapper.selectByConditions(code,name,credit,type,deptName,classNumber,teacherName,capacity,selectedNumber,isFull);
+    public List<CourseClassDTO> getCourseByCondition(String code, String name, Integer credit, String type, String deptName, String classNumber, String teacherName, Integer capacity, Integer selectedNumber, Integer isFull) {
+        List<CourseClassDTO> courseClassDTOS=courseMapper.selectByConditions(code,name,credit,type,deptName,classNumber,teacherName,capacity,selectedNumber,isFull);
 
-        return courses;
+
+        return courseClassDTOS;
     }
 
 
