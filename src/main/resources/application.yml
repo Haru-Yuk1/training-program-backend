@@ -1,16 +1,17 @@
 spring:
   application:
     name: training-program-backend
-
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/student
+    url: jdbc:mysql://localhost:3306/registration
     username: root
     password: 612520
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
+
   mail:
     host: smtp.qq.com
     username: 1366401799@qq.com
@@ -27,9 +28,12 @@ spring:
         "mail.smtp.starttls.required": true
 
 
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 upload:
   path: E:\Work\Project\IDEAProject\training-program-backend\images\
+server:
+  address: 0.0.0.0 #允许局域网访问

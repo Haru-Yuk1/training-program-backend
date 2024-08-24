@@ -1,6 +1,7 @@
 package com.test.trainingprogrambackend.controller;
 
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -22,7 +23,8 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 @RestController
-
+@CrossOrigin(maxAge = 30000)
+@Api(tags = "文件上传")
 public class FileUploadController {
 
 
@@ -35,8 +37,8 @@ public class FileUploadController {
         // 获取图片的原始名称
         System.out.println(image.getOriginalFilename());
         //设置图片新名称
-        //String imageName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
-        String imageName = image.getOriginalFilename();
+        String imageName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+        //String imageName = image.getOriginalFilename();
         System.out.println(imageName);
         //设置文件
         File file = new File(uploadPath+imageName);

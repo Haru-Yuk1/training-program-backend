@@ -2,6 +2,8 @@ package com.test.trainingprogrambackend.controller;
 
 
 import com.test.trainingprogrambackend.Service.emailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,12 +12,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @RestController
+@Api(tags = "邮箱验证码操作")
 public class EmailController {
     @Autowired
     private emailService emailService;
 
-    @GetMapping("/register")
+    @ApiOperation("发送邮箱验证码")
+    @GetMapping("/email/sendCode")
     public String sendCode(String to, HttpSession httpSession) {
+        if(to==null){
+            return "邮箱未填写";
+        }
         try{
             String randomCode=emailService.sendMail(to);
             httpSession.setAttribute("Code", randomCode);
@@ -28,7 +35,8 @@ public class EmailController {
         }
 
     }
-    @GetMapping("/checkCode")
+    @ApiOperation("验证邮箱验证码")
+    @GetMapping("/email/checkCode")
     public String checkCode(String code, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {

@@ -26,7 +26,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo(){
         return new ApiInfoBuilder()
                 .title("演示文档API")
-                .description("学习Swagger2的演示项目")
+                .description("实训用API文档")
                 .version("v0.01")
                 .build();
     }
