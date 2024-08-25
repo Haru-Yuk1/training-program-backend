@@ -19,8 +19,11 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student where dorName=#{dorName}")
     List<Student> findAllByDorName();
 
-    @Update("update student set dorName = #{dorName} where id = #{id}")
-    void updateDorName(@Param("id") int id, @Param("dorName") String dorName);
+    @Select("select dorName from student where studentid=#{studentid}")
+    String findDorNameById(String studentid);
+
+    @Update("update student set dorName = #{dorName} where studentid = #{studentid}")
+    void updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
 
     @Update("update student set password=#{password},status=#{status} where phone=#{phone}")
     int registerByPhone(@Param("phone") String phone,@Param("password") String password,int status);
