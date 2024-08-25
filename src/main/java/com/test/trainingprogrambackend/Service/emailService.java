@@ -20,7 +20,7 @@ public class emailService {
         message.setFrom(from);
         message.setTo(to);
         message.setSubject("Hiya新生报到平台");
-        message.setText("你的验证码为："+code.toString()+"请勿将验证码泄露给他人！");
+        message.setText("你的验证码为："+code.toString()+",请勿将验证码泄露给他人！");
         mailSender.send(message);
         return code.toString();
     }
