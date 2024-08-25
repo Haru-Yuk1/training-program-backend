@@ -10,8 +10,13 @@ import java.util.List;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
+    //获取所有学生
     @Select("select * from student")
     List<Student> findAll();
+
+    //通过学生名字获取学生信息
+    @Select("select * from student where name=#{name}")
+    Student findByName(String name);
 
     @Select("select classes, dorStatus from student")
     List<Student> findClassesAndDorStatus();

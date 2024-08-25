@@ -37,3 +37,6 @@ upload:
   path: E:\Work\Project\IDEAProject\training-program-backend\images\
 server:
   address: 0.0.0.0 #允许局域网访问
+  servlet:
+    session:
+      timeout: 30m
