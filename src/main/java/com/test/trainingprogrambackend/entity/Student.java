@@ -26,7 +26,7 @@ public class Student {
     private String password;
     private String dorName;
     private String deptName;
-    private int perference;
+    private int preference;
     private int status;
     private int isFinishSelect;
     private int dorStatus;
