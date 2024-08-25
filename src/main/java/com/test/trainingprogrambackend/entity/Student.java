@@ -19,7 +19,6 @@ public class Student {
     private String email;
     private String idCard;
     private String major;
-    private String grade;
     private String classes;
     private String address;
     private String studentid;
@@ -31,6 +30,7 @@ public class Student {
     private int isFinishSelect;
     private int dorStatus;
     private int isFinishLog;
+    private String imagUrl;
 
 
 }

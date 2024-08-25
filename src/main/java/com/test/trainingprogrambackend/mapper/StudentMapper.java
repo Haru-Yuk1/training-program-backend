@@ -10,8 +10,13 @@ import java.util.List;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
+    //获取所有学生
     @Select("select * from student")
     List<Student> findAll();
+
+    //通过学生名字获取学生信息
+    @Select("select * from student where name=#{name}")
+    Student findByName(String name);
 
     @Select("select classes, dorStatus from student")
     List<Student> findClassesAndDorStatus();
@@ -22,17 +27,25 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Update("update student set dorName = #{dorName} where id = #{id}")
     void updateDorName(@Param("id") int id, @Param("dorName") String dorName);
 
+    //用手机注册
     @Update("update student set password=#{password},status=#{status} where phone=#{phone}")
     int registerByPhone(@Param("phone") String phone,@Param("password") String password,int status);
 
     @Update("update student set password=#{password},status=#{status} where email=#{email}")
     int registerByEmail(@Param("email") String email,@Param("password") String password,int status);
 
+
+    //用手机登录
     @Select("select * from student where phone=#{phone} and password=#{password}")
     Student loginByPhone(@Param("phone") String phone, @Param("password") String password);
 
     @Select("select * from student where email=#{email} and password=#{password}")
     Student loginByEmail(@Param("email") String email, @Param("password") String password);
+
+    //更新学生的头像图片地址
+    @Update("update student set imgUrl=#{imgUrl}")
+    int updateImgUrl(@Param("imgUrl") String imgUrl);
+
 
 //    @Update("update student set name=#{name},idCard=#{idCard},major=#{major},classes=#{classes},studentid=#{studentid},nation=#{nation},address=#{address} where phone=#{phone}")
 //    int updateInformation(String name,String idCard,String major,String classes, String studentid,String nation,String address,String phone);
