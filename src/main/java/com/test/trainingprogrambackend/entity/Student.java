@@ -29,7 +29,7 @@ public class Student {
     private int perference;
     private int status;
     private int isFinishSelect;
-    private int isFinishDor;
+    private int dorStatus;
     private int isFinishLog;
 
 

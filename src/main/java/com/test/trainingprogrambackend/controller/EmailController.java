@@ -33,7 +33,6 @@ public class EmailController {
             e.printStackTrace();
             return "验证码发送失败";
         }
-
     }
     @ApiOperation("验证邮箱验证码")
     @GetMapping("/email/checkCode")

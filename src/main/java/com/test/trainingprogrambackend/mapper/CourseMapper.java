@@ -35,4 +35,8 @@ public interface CourseMapper {
             +"<if test='isFull!=null'> AND isFull=#{isFull}</if>"
             +"</script>")
     List<CourseClassDTO> selectByConditions(String code, String name, Integer credit, String type, String deptName, String classNumber, String teacherName, Integer capacity, Integer selectedNumber, Integer isFull);
+
+    @Select("select * from course natural join courseclass natural join takes where studentid=#{studentid}")
+    List<CourseClassDTO> courseClassByStudentId(@Param("studentid") String studentid);
+
 }

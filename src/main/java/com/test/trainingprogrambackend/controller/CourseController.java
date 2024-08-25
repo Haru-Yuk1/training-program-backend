@@ -1,12 +1,12 @@
 package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.entity.Course;
-import com.test.trainingprogrambackend.entity.CourseClass;
 import com.test.trainingprogrambackend.entity.CourseClassDTO;
 import com.test.trainingprogrambackend.mapper.CourseMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,9 +14,13 @@ import java.util.List;
 
 @RestController
 @Api(tags = "课程操作")
+@CrossOrigin(maxAge = 50000)
 public class CourseController {
     @Autowired
     private CourseMapper courseMapper;
+
+
+
     @ApiOperation("直接获取所有课程")
     @GetMapping("/course/getAll")
     public List<Course> getAll() {
@@ -51,6 +55,12 @@ public class CourseController {
         List<CourseClassDTO> courseClassDTOS=courseMapper.selectByConditions(code,name,credit,type,deptName,classNumber,teacherName,capacity,selectedNumber,isFull);
 
 
+        return courseClassDTOS;
+    }
+    @ApiOperation("通过学生Id来获取课程")
+    @GetMapping("/course/getBystudentId")
+    public List<CourseClassDTO> getCourseByStudentId(String studentId) {
+        List<CourseClassDTO> courseClassDTOS=courseMapper.courseClassByStudentId(studentId);
         return courseClassDTOS;
     }
 
