@@ -28,6 +28,7 @@ import java.util.UUID;
 @RestController
 @CrossOrigin(maxAge = 30000)
 @Api(tags = "文件上传")
+@RequestMapping("/File")
 public class FileUploadController {
 
 
@@ -38,7 +39,7 @@ public class FileUploadController {
     private StudentMapper studentMapper;
 
     @ApiOperation("上传图片")
-    @PostMapping("/upload/image")
+    @PostMapping("/uploadImage")
     public Result upload(MultipartFile image,  String studentid)throws IOException {
         // 获取图片的原始名称
         System.out.println(image.getOriginalFilename());
@@ -106,4 +107,13 @@ public class FileUploadController {
 
         return Result.ok().data("resource",resource).message("上传图片成功");
     }
+
+    @ApiOperation("通过学生id获取照片地址")
+    @GetMapping("/getImgUrl")
+    public Result getImgUrl(String studentid) {
+        Student student = studentMapper.findByStudentid(studentid);
+        System.out.println(student);
+        return Result.ok().data("imgUrl",student.getImageUrl());
+    }
+
 }

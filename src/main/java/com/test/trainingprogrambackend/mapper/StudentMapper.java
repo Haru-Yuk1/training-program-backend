@@ -100,12 +100,28 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student where email=#{email}")
     Student loginByEmailAndCode(@Param("email") String email);
 
+    // 忘记密码
+    //查询
+    @Select("select * from student where phone=#{phone}")
+    Student findByPhone(@Param("phone") String phone);
+
+    @Select("select * from student where email=#{email}")
+    Student findByEmail(@Param("email") String email);
+    // 忘记密码 通过手机
+    @Update("update student set password=#{password} where phone=#{phone}")
+    int updatePasswordByPhone(@Param("phone") String phone, @Param("password") String password);
+
+    //忘记密码 通过邮箱
+    @Update("update student set password=#{password} where email=#{email}")
+    int updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 
     @Update("update student set imageUrl=#{imageUrl} where studentid=#{studentid}")
     int updateImageUrl(@Param("imageUrl") String imageUrl,String studentid);
 
 
-
+    //更新学生表
+    @Update("update student set email=#{email},address=#{address} where idCard=#{idCard}")
+    int updateStudentInfo(String email,String address,String idCard);
 
 
 }

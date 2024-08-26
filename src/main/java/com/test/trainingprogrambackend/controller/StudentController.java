@@ -150,25 +150,57 @@ public class StudentController {
         return Result.ok().data("Student",student).message("成功获取学生");
     }
 
+    @ApiOperation("忘记密码通过邮箱找回")
+    @PostMapping("/forgetPasswordByEmail")
+    public Result forgetPasswordByEmail(@RequestParam String email,@RequestParam String password) {
+        Student student=studentMapper.findByEmail(email);
+        if(student==null){
+            return Result.error().message("未找到该邮箱");
+        }
+        String encryptedPassword= MD5Util.encrypt(password);
+        int success=studentMapper.updatePasswordByEmail(email,encryptedPassword);
+        if(success==1){
+            return Result.ok().message("修改成功");
+        }
+        return Result.error().message("修改失败");
+    }
+    @ApiOperation("忘记密码通过手机找回")
+    @PostMapping("/forgetPasswordByPhone")
+    public Result forgetPasswordByPhone(@RequestParam String phone,@RequestParam String password) {
+        Student student=studentMapper.findByPhone(phone);
+        if(student==null){
+            return Result.error().message("未找到该邮箱");
+        }
+        String encryptedPassword= MD5Util.encrypt(password);
+
+        int success=studentMapper.updatePasswordByPhone(phone,encryptedPassword);
+
+        if(success==1){
+            return Result.ok().message("修改成功");
+        }
+        return Result.error().message("修改失败");
+    }
+
     @PostMapping("/logout")
     public Result logout() {
 
         return Result.ok();
     }
 
-//    @ApiOperation("通过手机来更新信息")
-//    @PutMapping("/update/Information")
-//    public String updateStuInformation(String stu_name, String idcard, String college, String major, String classes, String stu_id, String nation, String address, String phone) {
-//
-//        int success=studentMapper.updateInformation(stu_name,idcard,college,major,classes,stu_id,nation,address,phone);
-//        return success==1?"success":"fail";
-//    }
-//    @ApiOperation("通过邮箱来更新信息")
-//    @PutMapping("/update/StuInformationByEmail")
-//    public String updateStuInformationByEmail(String stu_name,String idcard,String college,String major,String classes, String stu_id,String nation,String address,String email) {
-//        int success=studentMapper.updateInformationByEmail(stu_name,idcard,college,major,classes,stu_id,nation,address,email);
-//        return success==1?"success":"fail";
-//    }
+    @ApiOperation("更新信息")
+    @PostMapping("/updateInfo")
+    public Result updateInfo(@RequestBody Student student) {
+        if(studentMapper.findByIdCard(student.getIdCard())==null){
+            return Result.error().message("未找到该学生");
+        }
+//        int success=studentMapper.updateStudentInfo(student.getPhone(),student.getEmail(),student.getAddress(),student.getIdCard());
+        int success=studentMapper.updateStudentInfo(student.getEmail(),student.getAddress(),student.getIdCard());
+        if(success==1){
+            return Result.ok().message("更新成功");
+        }
+        return Result.error().message("更新失败");
+    }
+
 
 
 }
