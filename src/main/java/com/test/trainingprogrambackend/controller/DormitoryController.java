@@ -2,7 +2,7 @@ package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.Service.DormitoryService;
 import com.test.trainingprogrambackend.entity.Dormitory;
-import com.test.trainingprogrambackend.util.R;
+import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +39,15 @@ public class DormitoryController {
 
     @PostMapping("/dor/adjustByNotFullDor")
     @ApiOperation("后台调整学生至非满宿舍")
-    public R adjustByNotNullDor(String studentid, String dorName){
+    public Result adjustByNotNullDor(String studentid, String dorName){
         dormitoryService.adjustDorByNotFullDor(studentid, dorName);
-        return R.success(200, "调整成功", null);
+        return Result.ok().message("调整成功");
     }
 
     @PostMapping("/dor/adjustByExchange")
     @ApiOperation("后台交换学生宿舍")
-    public R adjustByExchange(String studentid1, String studentid2){
+    public Result adjustByExchange(String studentid1, String studentid2){
         dormitoryService.adjustDorByExchange(studentid1, studentid2);
-        return R.success(200, "交换成功", null);
+        return Result.ok().message("交换成功");
     }
 }
