@@ -17,10 +17,10 @@ public class DormitoryService {
     @Autowired
     private StudentMapper studentMapper;
 
-    // 分配宿舍操作
+    // 后台管理系统操作
+        // 分配宿舍操作
     public List<Dormitory> assignDor() {
         List<Student> studentList = studentMapper.findClassesAndDorStatus();
-        boolean correct = true;
         for (Student student : studentList) {
             if (student.getDorStatus() == 1) {
                 //分配宿舍
@@ -38,35 +38,45 @@ public class DormitoryService {
         return dormitoryMapper.getDormitoryWithStudent();
     }
 
-    // 调整宿舍涉及操作
-    // 查询对应班级未满宿舍
+        // 调整宿舍涉及操作
+            // 查询对应班级未满宿舍
     public List<Dormitory> findNotFullDorByClasses(String classes) {
         return dormitoryMapper.getByClassesNotNullAll(classes);
     }
 
-    // 刷新宿舍显示信息
+            // 刷新宿舍显示信息
     public List<Dormitory> refreshDor() {
         return dormitoryMapper.getDormitoryWithStudent();
     }
 
-    // 调整宿舍操作
-    public void adjustDorByNotFullDor(String studentid, String dorName) {
+            // 调整宿舍操作
+    public int adjustDorByNotFullDor(String studentid, String dorName) {
         String dorNameFromStudent = studentMapper.findDorNameById(studentid);
-        studentMapper.updateDorNameById(studentid, dorName);
+        int correct = 1;
+        correct = studentMapper.updateDorNameById(studentid, dorName) == 1 ? correct : 0;
         if(dormitoryMapper.getpeoNumberByDorName(dorNameFromStudent).getPeoNumber() == 4) {
-            dormitoryMapper.updateNotFull(dorNameFromStudent);
+            correct = dormitoryMapper.updateNotFull(dorNameFromStudent) == 1 ? correct : 0;
         }
-        dormitoryMapper.updatePeoNumberMinus(dorNameFromStudent);
+        correct = correct == dormitoryMapper.updatePeoNumberMinus(dorNameFromStudent) ? 1 : 0;
         if(dormitoryMapper.getpeoNumberByDorName(dorName).getPeoNumber() + 1 == 4) {
-            dormitoryMapper.updateFull(dorName);
+            correct = dormitoryMapper.updateFull(dorName) == 1 ? correct : 0;
         }
-        dormitoryMapper.updatePeoNumberAdd(dorName);
+        correct = dormitoryMapper.updatePeoNumberAdd(dorName) == 1 ? correct : 0;
+        return correct;
     }
 
-    public void adjustDorByExchange(String studentid1, String studentid2) {
+    public int adjustDorByExchange(String studentid1, String studentid2) {
         String dorName1 = studentMapper.findDorNameById(studentid1);
         String dorName2 = studentMapper.findDorNameById(studentid2);
-        studentMapper.updateDorNameById(studentid1, dorName2);
-        studentMapper.updateDorNameById(studentid2, dorName1);
+        return studentMapper.updateDorNameById(studentid1, dorName2) & studentMapper.updateDorNameById(studentid2, dorName1);
+    }
+
+    // 客户端操作
+    public int isApplyDor(String studentid, int dorStatus) {
+        return studentMapper.updateDorStatusById(studentid, dorStatus);
+    }
+
+    public Dormitory findDorByStudentId(String studentid) {
+        return dormitoryMapper.getByDorName(studentMapper.findDorNameById(studentid));
     }
 }

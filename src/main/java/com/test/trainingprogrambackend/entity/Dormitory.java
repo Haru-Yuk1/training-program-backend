@@ -18,6 +18,7 @@ public class Dormitory {
     private String deptName;
     private short peoNumber;
     private short isFull;
+    private String areaName;
 
     @TableField(exist = false)
     private List<Student> students;//学生姓名

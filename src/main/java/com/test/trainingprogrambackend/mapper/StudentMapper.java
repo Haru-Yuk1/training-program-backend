@@ -8,17 +8,39 @@ import com.test.trainingprogrambackend.entity.StudentStatistics;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
     // 后台管理操作
     @Select("select " +
-    "sum(case when status=1 then 1 else 0 end) as registNum," +
+    "sum(case when status=1 then 1 else 0 end) as ActivateNum," +
        "sum(case when isFinishSelect=1 then 1 else 0 end) as chooseNum," +
           "sum(case when dorStatus!=0 then 1 else 0 end) as dorFinishNum, " +
             "sum(case when isFinishLog=1 then 1 else 0 end) as logFinishNum, " +
+                "sum(case when isFinishLog=1 && dorStatus=1 && isFinishSelect=1 then 1 else 0 end) as registerFinishNum, " +
                 "count(*) as totalCount " + "from student")
     StudentStatistics findAllStatistics();
+
+
+    // 统计各班级完成注册人数
+    @Select("SELECT classes, COUNT(*) AS registeredCount " +
+            "FROM student " +
+            "WHERE status = 1 AND isFinishSelect = 1 AND dorStatus IN (1, 2) AND isFinishLog = 1 " +
+            "GROUP BY classes")
+    List<Map<String, Object>> countRegisteredNumByClass();
+
+    // 统计各专业实际人数
+    @Select("SELECT major, COUNT(*) AS studentCount " +
+            "FROM student " +
+            "GROUP BY major")
+    List<Map<String, Object>> countStudentsByMajor();
+
+    // 统计各学院实际人数
+    @Select("SELECT deptName, COUNT(*) AS studentCount " +
+            "FROM student " +
+            "GROUP BY deptName")
+    List<Map<String, Object>> countStudentsByDept();
 
     //获取所有学生
     @Select("select * from student")
@@ -38,7 +60,10 @@ public interface StudentMapper extends BaseMapper<Student> {
     String findDorNameById(String studentid);
 
     @Update("update student set dorName = #{dorName} where studentid = #{studentid}")
-    boolean updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
+    int updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
+
+    @Update("update student set dorStatus = #{dorStatus} where studentid = #{studentid}")
+    int updateDorStatusById(@Param("studentid") String studentid, @Param("dorStatus") int dorStatus);
 
     // 登录操作
 
@@ -59,8 +84,6 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Update("update student set password=#{password},status=#{status} where email=#{email}")
     int registerByEmail(@Param("email") String email,@Param("password") String password,int status);
 
-
-    //用手机登录
     @Select("select * from student where phone=#{phone} and password=#{password}")
     Student loginByPhone(@Param("phone") String phone, @Param("password") String password);
 
