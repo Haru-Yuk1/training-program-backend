@@ -53,9 +53,14 @@ public class BackstageController {
         return dorBedNum;
     }
 
-//    // 用于文字展示，床位总数和申请住宿、不申请住宿人数、
-//    @GetMapping("/backstage/bedApply")
-//    public List<Integer> bedApplyNum() {
-//
-//    }
+    // 用于文字展示，床位总数和申请住宿、不申请住宿人数
+    @ApiOperation("用于文字展示，床位总数和申请住宿、不申请住宿人数")
+    @GetMapping("/backstage/bedApply")
+    public Map<String, Object> bedApplyNum() {
+        Map<String, Object> isApplyNum = new HashMap<>();
+        isApplyNum.put("totalBeds", dormitoryMapper.countTotalBeds());
+        isApplyNum.put("applyDorm", studentMapper.countApplyDorm());
+        isApplyNum.put("notApplyDorm", studentMapper.countNotApplyDorm());
+        return isApplyNum;
+    }
 }

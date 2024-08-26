@@ -53,4 +53,7 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
             "GROUP BY areaName")
     List<Map<String, Object>> countTotalResidentsByArea();
 
+    // 统计总床位数（一个宿舍固定4个床位）
+    @Select("SELECT COUNT(*) * 4 AS totalBeds FROM dormitory")
+    int countTotalBeds();
 }
