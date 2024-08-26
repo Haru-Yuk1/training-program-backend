@@ -39,7 +39,7 @@ public class FileUploadController {
 
     @ApiOperation("上传图片")
     @PostMapping("/upload/image")
-    public Result upload(MultipartFile image, @RequestHeader("Authorization") String token)throws IOException {
+    public Result upload(MultipartFile image,  String studentid)throws IOException {
         // 获取图片的原始名称
         System.out.println(image.getOriginalFilename());
         //设置图片新名称
@@ -56,8 +56,8 @@ public class FileUploadController {
         System.out.println(path);
 
         //获取token
-        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
-        Student student=studentMapper.findByIdCard(StudentIdCard);
+
+        Student student=studentMapper.findByStudentid(studentid);
 
         int success =studentMapper.updateImageUrl(path, student.getStudentid());
         if(success==1){
@@ -67,6 +67,37 @@ public class FileUploadController {
 
 
     }
+
+
+//    @PostMapping("/upload/image")
+//    public Result upload(MultipartFile image, @RequestHeader("Authorization") String token)throws IOException {
+//        // 获取图片的原始名称
+//        System.out.println(image.getOriginalFilename());
+//        //设置图片新名称
+//        String imageName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+//        //String imageName = image.getOriginalFilename();
+//        System.out.println(imageName);
+//        //设置文件
+//        File file = new File(uploadPath+imageName);
+//        image.transferTo(file);
+//        System.out.println(uploadPath+imageName);
+//        //图片后端地址
+//        String path = "/images/"+imageName;
+//
+//        System.out.println(path);
+//
+//        //获取token
+//        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
+//        Student student=studentMapper.findByIdCard(StudentIdCard);
+//
+//        int success =studentMapper.updateImageUrl(path, student.getStudentid());
+//        if(success==1){
+//            return Result.ok().data("path",path).message("图片上传成功");
+//        }
+//        return Result.error().message("图片上传失败");
+//
+//
+//    }
     @ApiOperation("获取上传的图片")
     @GetMapping("/images/{imageName}")
     public Result getImage(@PathVariable String imageName) throws IOException {

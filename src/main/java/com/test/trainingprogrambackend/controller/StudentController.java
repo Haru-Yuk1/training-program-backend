@@ -103,8 +103,9 @@ public class StudentController {
 
         Student student=studentMapper.loginByPhoneAndPassword(phone,encryptedPassword);
         if(student==null){
-            return Result.error().message("密码错误");
+            return Result.error().message("");
         }
+
         String token = JwtUtils.generateToken(student.getName());
 
         return Result.ok().data("token",token);

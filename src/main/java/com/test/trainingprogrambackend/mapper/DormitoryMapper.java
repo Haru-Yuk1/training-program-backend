@@ -38,7 +38,7 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
     @Update("update dormitory set peoNumber = peoNumber - 1 where dorName = #{dorName}")
     int updatePeoNumberMinus(String dorName);
 
-    @Select("select dorName from dormitory")
+    @Select("select * from dormitory")
     @Results({
             @Result(column = "dorName", property = "dorName"),
             @Result(column = "dorName", property = "students", javaType = List.class,

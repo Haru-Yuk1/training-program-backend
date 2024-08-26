@@ -30,9 +30,13 @@ public class TakesService {
 
         Map<String, Object> courseClass = takesMapper.isClassFull(classNumber);
 
-        int selectedNum = (int) courseClass.get("selectedNumber");
-        int capacity = (int) courseClass.get("capacity");
+        Long selectedNumLong = (Long) courseClass.get("selectedNumber");
+        Long capacityLong = (Long) courseClass.get("capacity");
         int isFull = (int) courseClass.get("isFull");
+
+        int selectedNum = selectedNumLong.intValue();
+        int capacity = capacityLong.intValue();
+
         System.out.println(selectedNum+" "+capacity+" "+isFull);
         if(isFull==1){
             return Result.error().message("课程已选满");
@@ -61,17 +65,24 @@ public class TakesService {
     public Result deleteTakesOperation(String studentid, String classNumber){
         Map<String, Object> courseClass = takesMapper.isClassFull(classNumber);
 
-        int selectedNum = (int) courseClass.get("selectedNumber");
-        int capacity = (int) courseClass.get("capacity");
+        Long selectedNumLong = (Long) courseClass.get("selectedNumber");
+        Long capacityLong = (Long) courseClass.get("capacity");
         int isFull = (int) courseClass.get("isFull");
+
+        int selectedNum = selectedNumLong.intValue();
+        int capacity = capacityLong.intValue();
+
 
         List<Takes> takes=takesMapper.findByStudentid(studentid);
         System.out.println(takes);
+
         if(takes.isEmpty()){
             return Result.error().message("你未选该课程");
         }
-
-        takesMapper.deleteByStudentid(studentid);
+        if(selectedNum-1<0){
+            return Result.error().message("所选人数为负，");
+        }
+        takesMapper.deleteByStudentid(studentid,classNumber);
         takesMapper.updateCourseClass(classNumber,selectedNum-1);
         if(selectedNum-1<capacity){
             takesMapper.updateFull(classNumber,0);

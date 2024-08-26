@@ -40,8 +40,8 @@ public interface TakesMapper {
     public List<Takes> findByStudentid(String studentid);
 
     //删除所选课程
-    @Delete("delete from takes where studentid=#{studentid}")
-    public void deleteByStudentid(String studentid);
+    @Delete("delete from takes where studentid=#{studentid} and classNumber=#{classNumber}")
+    public void deleteByStudentid(String studentid,String classNumber);
 
 
 
