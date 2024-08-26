@@ -4,12 +4,24 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 
 import com.test.trainingprogrambackend.entity.Student;
+import com.test.trainingprogrambackend.entity.StudentStatistics;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
+    // 后台管理操作
+    @Select("select " +
+    "sum(case when status=1 then 1 else 0 end) as registNum," +
+       "sum(case when isFinishSelect=1 then 1 else 0 end) as chooseNum," +
+          "sum(case when dorStatus!=0 then 1 else 0 end) as dorFinishNum, " +
+            "sum(case when isFinishLog=1 then 1 else 0 end) as logFinishNum, " +
+                "count(*) as totalCount " + "from student")
+    StudentStatistics findAllStatistics();
+
+
+    // 宿舍操作
     @Select("select * from student")
     List<Student> findAll();
 
@@ -23,8 +35,9 @@ public interface StudentMapper extends BaseMapper<Student> {
     String findDorNameById(String studentid);
 
     @Update("update student set dorName = #{dorName} where studentid = #{studentid}")
-    void updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
+    boolean updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
 
+    // 登录操作
     @Update("update student set password=#{password},status=#{status} where phone=#{phone}")
     int registerByPhone(@Param("phone") String phone,@Param("password") String password,int status);
 

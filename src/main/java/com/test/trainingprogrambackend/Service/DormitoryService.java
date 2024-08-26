@@ -20,6 +20,7 @@ public class DormitoryService {
     // 分配宿舍操作
     public List<Dormitory> assignDor() {
         List<Student> studentList = studentMapper.findClassesAndDorStatus();
+        boolean correct = true;
         for (Student student : studentList) {
             if (student.getDorStatus() == 1) {
                 //分配宿舍

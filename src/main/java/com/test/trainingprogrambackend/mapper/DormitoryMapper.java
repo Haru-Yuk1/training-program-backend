@@ -18,16 +18,16 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
     Dormitory getpeoNumberByDorName(String dorName);
 
     @Update("update dormitory set isFull = 1 where dorName = #{dorName}")
-    void updateFull(String dorName);
+    boolean updateFull(String dorName);
 
     @Update("update dormitory set isFull = 0 where dorName = #{dorName}")
-    void updateNotFull(String dorName);
+    boolean updateNotFull(String dorName);
 
     @Update("update dormitory set peoNumber = peoNumber + 1 where dorName = #{dorName}")
-    void updatePeoNumberAdd(String dorName);
+    boolean updatePeoNumberAdd(String dorName);
 
     @Update("update dormitory set peoNumber = peoNumber - 1 where dorName = #{dorName}")
-    void updatePeoNumberMinus(String dorName);
+    boolean updatePeoNumberMinus(String dorName);
 
     @Select("select dorName from dormitory")
     @Results({
