@@ -2,10 +2,12 @@ package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.Service.DormitoryService;
 import com.test.trainingprogrambackend.entity.Dormitory;
+import com.test.trainingprogrambackend.util.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -16,9 +18,36 @@ public class DormitoryController {
     @Autowired
     private DormitoryService dormitoryService;
 
-    @GetMapping("/assignDor")
-    @ApiOperation("分配宿舍")
+    // 后台管理系统接口
+    @GetMapping("/dor/assignDor")
+    @ApiOperation("后台分配宿舍并返回分配结果")
     public List<Dormitory> assignDor(){
         return dormitoryService.assignDor();
+    }
+
+    @GetMapping("/dor/getNotFullDorByClasses")
+    @ApiOperation("后台获取对应班级未满宿舍信息")
+    public List<Dormitory> getNotFullDorByClasses(String classes){
+        return dormitoryService.findNotFullDorByClasses(classes);
+    }
+
+    @GetMapping("/dor/refreshDor")
+    @ApiOperation("后台刷新宿舍信息")
+    public List<Dormitory> refreshDor(){
+        return dormitoryService.refreshDor();
+    }
+
+    @PostMapping("/dor/adjustByNotFullDor")
+    @ApiOperation("后台调整学生至非满宿舍")
+    public R adjustByNotNullDor(String studentid, String dorName){
+        dormitoryService.adjustDorByNotFullDor(studentid, dorName);
+        return R.success(200, "调整成功", null);
+    }
+
+    @PostMapping("/dor/adjustByExchange")
+    @ApiOperation("后台交换学生宿舍")
+    public R adjustByExchange(String studentid1, String studentid2){
+        dormitoryService.adjustDorByExchange(studentid1, studentid2);
+        return R.success(200, "交换成功", null);
     }
 }

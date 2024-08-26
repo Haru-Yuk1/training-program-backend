@@ -4,12 +4,24 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 
 import com.test.trainingprogrambackend.entity.Student;
+import com.test.trainingprogrambackend.entity.StudentStatistics;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
+    // 后台管理操作
+    @Select("select " +
+    "sum(case when status=1 then 1 else 0 end) as registNum," +
+       "sum(case when isFinishSelect=1 then 1 else 0 end) as chooseNum," +
+          "sum(case when dorStatus!=0 then 1 else 0 end) as dorFinishNum, " +
+            "sum(case when isFinishLog=1 then 1 else 0 end) as logFinishNum, " +
+                "count(*) as totalCount " + "from student")
+    StudentStatistics findAllStatistics();
+
+
+    // 宿舍操作
     //获取所有学生
     @Select("select * from student")
     List<Student> findAll();
@@ -24,9 +36,13 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student where dorName=#{dorName}")
     List<Student> findAllByDorName();
 
-    @Update("update student set dorName = #{dorName} where id = #{id}")
-    void updateDorName(@Param("id") int id, @Param("dorName") String dorName);
+    @Select("select dorName from student where studentid=#{studentid}")
+    String findDorNameById(String studentid);
 
+    @Update("update student set dorName = #{dorName} where studentid = #{studentid}")
+    boolean updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
+
+    // 登录操作
     //通过idCard找学生
     @Select("select * from student where idCard=#{idCard}")
     Student findByIdCard(@Param("idCard") String idCard);
