@@ -32,6 +32,7 @@ public class BackstageController {
     }
 
     // 用于中心旭日图，各班级完成注册人数、各专业实际人数、各学院实际人数
+    @ApiOperation("用于中心旭日图，各班级完成注册人数、各专业实际人数、各学院实际人数")
     @GetMapping("/sunChart")
     public Map<String, Object> sunChartNum() {
         Map<String, Object> statSumChat = new HashMap<>();
@@ -43,6 +44,7 @@ public class BackstageController {
 
 
     // 用于宿舍情况展示，各园区床位总数和入住人数统计情况
+    @ApiOperation("用于宿舍情况展示，各园区床位总数和入住人数统计情况")
     @GetMapping("/dorSituation")
     public Map<String, Object> dorSituation() {
         Map<String, Object> dorBedNum = new HashMap<>();
@@ -51,9 +53,14 @@ public class BackstageController {
         return dorBedNum;
     }
 
-//    // 用于文字展示，床位总数和申请住宿、不申请住宿人数、
-//    @GetMapping("/backstage/bedApply")
-//    public List<Integer> bedApplyNum() {
-//
-//    }
+    // 用于文字展示，床位总数和申请住宿、不申请住宿人数
+    @ApiOperation("用于文字展示，床位总数和申请住宿、不申请住宿人数")
+    @GetMapping("/backstage/bedApply")
+    public Map<String, Object> bedApplyNum() {
+        Map<String, Object> isApplyNum = new HashMap<>();
+        isApplyNum.put("totalBeds", dormitoryMapper.countTotalBeds());
+        isApplyNum.put("applyDorm", studentMapper.countApplyDorm());
+        isApplyNum.put("notApplyDorm", studentMapper.countNotApplyDorm());
+        return isApplyNum;
+    }
 }

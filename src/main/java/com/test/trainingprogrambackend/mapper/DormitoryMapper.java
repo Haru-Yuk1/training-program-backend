@@ -15,8 +15,13 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
     @Select("select dorName, classes, peoNumber from dormitory where classes = #{classes} and isFull = 0")
     List<Dormitory> getByClassesNotNullAll(String classes);
 
-    @Select("select dorName, classes, peoNumber from dormitory where dorName = #{dorName}")
-    Dormitory getByDorName(String dorName);
+    @Select("select dorName from dormitory where dorName = #{dorName}")
+    @Results({
+            @Result(column = "dorName", property = "dorName"),
+            @Result(column = "dorName", property = "students", javaType = List.class,
+                    many = @Many(select = "com.test.trainingprogrambackend.mapper.StudentMapper.findAllByDorName"))
+    })
+    Dormitory getByDorNameWithStudent(String dorName);
 
     @Select("select peoNumber from dormitory where dorName = #{dorName}")
     Dormitory getpeoNumberByDorName(String dorName);
@@ -53,4 +58,7 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
             "GROUP BY areaName")
     List<Map<String, Object>> countTotalResidentsByArea();
 
+    // 统计总床位数（一个宿舍固定4个床位）
+    @Select("SELECT COUNT(*) * 4 AS totalBeds FROM dormitory")
+    int countTotalBeds();
 }

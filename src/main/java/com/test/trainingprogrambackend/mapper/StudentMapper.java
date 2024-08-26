@@ -22,6 +22,13 @@ public interface StudentMapper extends BaseMapper<Student> {
                 "count(*) as totalCount " + "from student")
     StudentStatistics findAllStatistics();
 
+    // 统计申请住宿的人数
+    @Select("SELECT COUNT(*) AS applyDorm FROM student WHERE dorStatus = 1")
+    int countApplyDorm();
+
+    // 统计不申请住宿的人数
+    @Select("SELECT COUNT(*) AS notApplyDorm FROM student WHERE dorStatus = 2")
+    int countNotApplyDorm();
 
     // 统计各班级完成注册人数
     @Select("SELECT classes, COUNT(*) AS registeredCount " +

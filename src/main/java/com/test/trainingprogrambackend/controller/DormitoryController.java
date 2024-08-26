@@ -20,20 +20,20 @@ public class DormitoryController {
     private DormitoryService dormitoryService;
 
     // 后台管理系统接口
-    @GetMapping("/assignDor")
     @ApiOperation("后台分配宿舍并返回分配结果")
+    @GetMapping("/assignDor")
     public List<Dormitory> assignDor(){
         return dormitoryService.assignDor();
     }
 
-    @GetMapping("/getNotFullDorByClasses")
     @ApiOperation("后台获取对应班级未满宿舍信息")
-    public List<Dormitory> getNotFullDorByClasses(String classes){
+    @GetMapping("/getNotFullDorByClasses")
+    public List<Dormitory> getNotFullDorByClasses(@RequestParam String classes){
         return dormitoryService.findNotFullDorByClasses(classes);
     }
 
-    @GetMapping("/refreshDor")
     @ApiOperation("后台刷新宿舍信息")
+    @GetMapping("/refreshDor")
     public List<Dormitory> refreshDor(){
         return dormitoryService.refreshDor();
     }
