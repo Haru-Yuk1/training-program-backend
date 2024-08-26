@@ -40,15 +40,13 @@ public class DormitoryController {
     @ApiOperation("后台调整学生至非满宿舍")
     @PostMapping("/adjustByNotFullDor")
     public Result adjustByNotNullDor(@RequestParam String studentid, @RequestParam String dorName){
-        dormitoryService.adjustDorByNotFullDor(studentid, dorName);
-        return Result.ok().message("调整成功");
+        return dormitoryService.adjustDorByNotFullDor(studentid, dorName) == 1 ? Result.ok().message("调整成功") : Result.error().message("调整失败");
     }
 
     @ApiOperation("后台交换学生宿舍")
     @PostMapping("/adjustByExchange")
     public Result adjustByExchange(@RequestParam String studentid1, @RequestParam String studentid2) {
-        dormitoryService.adjustDorByExchange(studentid1, studentid2);
-        return Result.ok().message("交换成功");
+        return dormitoryService.adjustDorByExchange(studentid1, studentid2) == 1? Result.ok().message("交换成功") : Result.error().message("交换失败");
     }
     // 客户端接口
 
