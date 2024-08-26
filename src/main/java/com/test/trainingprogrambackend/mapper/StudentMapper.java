@@ -75,35 +75,29 @@ public interface StudentMapper extends BaseMapper<Student> {
 
     //通过idCard找到学生激活账户
     @Update("update student set password=#{password},email=#{email},status=#{status} where idCard=#{idCard}")
-    int register(@Param("idCard") String idCard,@Param("email") String email, @Param("password") String password, @Param("status") int status);
+    int registerByEmail(@Param("idCard") String idCard,@Param("email") String email, @Param("password") String password, @Param("status") int status);
 
     //用手机注册
-    @Update("update student set password=#{password},status=#{status} where phone=#{phone}")
-    int registerByPhone(@Param("phone") String phone,@Param("password") String password,int status);
-
-    @Update("update student set password=#{password},status=#{status} where email=#{email}")
-    int registerByEmail(@Param("email") String email,@Param("password") String password,int status);
+    @Update("update student set password=#{password},phone=#{phone},status=#{status} where idCard=#{idCard}")
+    int registerByPhone(@Param("idCard") String idCard,@Param("phone") String phone, @Param("password") String password, @Param("status") int status);
 
     @Select("select * from student where phone=#{phone} and password=#{password}")
-    Student loginByPhone(@Param("phone") String phone, @Param("password") String password);
+    Student loginByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
 
     @Select("select * from student where email=#{email} and password=#{password}")
-    Student loginByEmail(@Param("email") String email, @Param("password") String password);
+    Student loginByEmailAndPassword(@Param("email") String email, @Param("password") String password);
+
+    @Select("select * from student where phone=#{phone}")
+    Student loginByPhoneAndCode(@Param("phone") String phone);
+
+    @Select("select * from student where email=#{email}")
+    Student loginByEmailAndCode(@Param("email") String email);
+
 
     @Update("update student set imageUrl=#{imageUrl} where studentid=#{studentid}")
     int updateImageUrl(@Param("imageUrl") String imageUrl,String studentid);
 
 
-    //    @Update("update student set name=#{name},idCard=#{idCard},major=#{major},classes=#{classes},studentid=#{studentid},nation=#{nation},address=#{address} where phone=#{phone}")
-//    int updateInformation(String name,String idCard,String major,String classes, String studentid,String nation,String address,String phone);
-
-
-//    @Update("update student set name=#{name},nation=#{nation},gender=#{gender},birthday=#{birthday},idCard=#{idCard},major=#{major},classes=#{classes},studentid=#{studentid},address=#{address},grade=#{grade} where phone=#{phone}")
-//    int updateInformation();
-
-
-//    @Update("update student set stu_name=#{stu_name},idcard=#{idcard},college=#{college},major=#{major},classes=#{classes},stu_id=#{stu_id},nation=#{nation},address=#{address} where email=#{email}")
-//    int updateInformationByEmail(String stu_name,String idcard,String college,String major,String classes, String stu_id,String nation,String address,String email);
 
 
 

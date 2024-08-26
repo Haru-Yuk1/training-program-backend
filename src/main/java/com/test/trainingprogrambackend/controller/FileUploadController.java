@@ -39,7 +39,7 @@ public class FileUploadController {
 
     @ApiOperation("上传图片")
     @PostMapping("/upload/image")
-    public Result upload(MultipartFile image, String token)throws IOException {
+    public Result upload(MultipartFile image, @RequestHeader("Authorization") String token)throws IOException {
         // 获取图片的原始名称
         System.out.println(image.getOriginalFilename());
         //设置图片新名称

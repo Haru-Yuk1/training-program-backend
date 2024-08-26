@@ -3,6 +3,7 @@ package com.test.trainingprogrambackend.controller;
 import com.test.trainingprogrambackend.entity.Student;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
 import com.test.trainingprogrambackend.util.JwtUtils;
+import com.test.trainingprogrambackend.util.MD5Util;
 import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,8 +50,8 @@ public class StudentController {
     }
 
     @ApiOperation("用身份证激活账户(同时更新邮箱、密码、激活状态)")
-    @PostMapping("/register")
-    public Result registerStudent(@RequestParam String IdCard,@RequestParam String email,@RequestParam String password) {
+    @PostMapping("/registerByEmail")
+    public Result registerStudentByEmail(@RequestParam String IdCard,@RequestParam String email,@RequestParam String password) {
         Student student=studentMapper.findByIdCard(IdCard);
         if(student==null){
             return Result.error().message("未找到该身份证").code(20001);
@@ -58,48 +59,83 @@ public class StudentController {
         if(student.getStatus()==1){
             return Result.error().message("该账号已被激活").code(20002);
         }
+        if(student.getEmail()!=null){
+            return Result.error().message("该邮箱已被注册").code(20003);
+        }
+        //加密密码
+        String encryptedPassword= MD5Util.encrypt(password);
 
-        int success=studentMapper.register(IdCard,email,password,1);
+        int success=studentMapper.registerByEmail(IdCard,email,encryptedPassword,1);
         if(success==1){
             return Result.ok().message("账号激活成功").code(20000);
         }
         return  Result.error().message("账号激活失败").code(20001);
     }
 
+    @ApiOperation("用电话更新")
+    @PostMapping("/registerByPhone")
+    public Result registerStudentByPhone(@RequestParam String IdCard,@RequestParam String phone,@RequestParam String password) {
 
+        Student student=studentMapper.findByIdCard(IdCard);
+        if(student==null){
+            return Result.error().message("未找到该身份证").code(20001);
+        }
+        if(student.getStatus()==1){
+            return Result.error().message("该账号已被激活").code(20002);
+        }
+        if(student.getPhone()!=null){
+            return Result.error().message("该电话已被注册").code(20003);
+        }
+        //加密密码
+        String encryptedPassword= MD5Util.encrypt(password);
 
+        int success=studentMapper.registerByPhone(IdCard,phone,encryptedPassword,1);
+        if(success==1){
+            return Result.ok().message("账号激活成功").code(20000);
+        }
+        return  Result.error().message("账号激活失败").code(20001);
+    }
 
-//    @ApiOperation("通过手机注册")
-//    @PutMapping("/registerByPhone")
-//    public Result registerByPhone(String phone, String password) {
-//        int success=studentMapper.registerByPhone(phone,password,1);
-//        if(success==1){
-//            return Result.ok().message("注册成功");
-//        }
-//        return Result.error().message("注册失败");
-//    }
-//    @ApiOperation("通过邮箱注册")
-//    @PutMapping("/registerByEmail")
-//    public Result registerByEmail(String email,String password) {
-//        int success=studentMapper.registerByEmail(email,password,1);
-//        if(success==1){
-//            return Result.ok().message("注册成功");
-//        }
-//        return Result.error().message("注册失败");
-//    }
+    @ApiOperation("通过手机+密码登录（会创建一个token，使用info时header要返回token）")
+    @PostMapping("/loginByPhoneAndPassword")
+    public Result loginByPhoneAndPassword(@RequestParam String phone,@RequestParam String password) {
+        String encryptedPassword= MD5Util.encrypt(password);
 
-    @ApiOperation("通过手机登录（会创建一个token，使用info时header要返回token）")
-    @PostMapping("/loginByPhone")
-    public Result loginByPhone(String phone,String password) {
-        Student student=studentMapper.loginByPhone(phone,password);
+        Student student=studentMapper.loginByPhoneAndPassword(phone,encryptedPassword);
+        if(student==null){
+            return Result.error().message("密码错误");
+        }
         String token = JwtUtils.generateToken(student.getName());
 
         return Result.ok().data("token",token);
     }
-    @ApiOperation("通过邮箱登录（会创建一个token，使用info时header要返回token）")
-    @PostMapping("/loginByEmail")
-    public Result loginByEmail(String email,String password) {
-        Student student=studentMapper.loginByEmail(email,password);
+    @ApiOperation("通过邮箱+密码登录（会创建一个token，使用info时header要返回token）")
+    @PostMapping("/loginByEmailAndPassword")
+    public Result loginByEmailAndPassword(@RequestParam String email,@RequestParam String password) {
+        String encryptedPassword= MD5Util.encrypt(password);
+
+        Student student=studentMapper.loginByEmailAndPassword(email,encryptedPassword);
+        if(student==null){
+            return Result.error().message("密码错误");
+        }
+
+        String token = JwtUtils.generateToken(student.getIdCard());
+
+        return Result.ok().data("token",token);
+    }
+    @ApiOperation("通过邮箱+验证码登录（会创建一个token，使用info时header要返回token）")
+    @PostMapping("/loginByEmailAndCode")
+    public Result loginByEmailAndCode(@RequestParam String email) {
+        Student student=studentMapper.loginByEmailAndCode(email);
+        String token = JwtUtils.generateToken(student.getIdCard());
+
+        return Result.ok().data("token",token);
+    }
+
+    @ApiOperation("通过邮箱+验证码登录（会创建一个token，使用info时header要返回token）")
+    @PostMapping("/loginByPhoneAndCode")
+    public Result loginByPhoneAndCode(@RequestParam String phone) {
+        Student student=studentMapper.loginByEmailAndCode(phone);
         String token = JwtUtils.generateToken(student.getIdCard());
 
         return Result.ok().data("token",token);
