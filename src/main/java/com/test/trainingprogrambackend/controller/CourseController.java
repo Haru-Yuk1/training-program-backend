@@ -58,12 +58,21 @@ public class CourseController {
 
     @ApiOperation("通过条件筛选课程(这个包括了courseclass表的信息)")
     @PostMapping("/getByCondition")
-    public List<CourseClassDTO> getCourseByCondition(String code, String name, Float credit, String type, String deptName, String classNumber, String teacherName, Integer capacity, Integer selectedNumber, Integer isFull) {
-        List<CourseClassDTO> courseClassDTOS=courseMapper.selectByConditions(code,name,credit,type,deptName,classNumber,teacherName,capacity,selectedNumber,isFull);
+    public List<CourseClassDTO> getCourseByCondition(@RequestBody CourseClassDTO courseClassDTO) {
+        List<CourseClassDTO> courseClassDTOS=courseMapper.selectByConditions(courseClassDTO.getCredit(),courseClassDTO.getType(),courseClassDTO.getDeptName(),courseClassDTO.getIsFull());
 
 
         return courseClassDTOS;
     }
+
+//    @ApiOperation("通过条件筛选课程(这个包括了courseclass表的信息)")
+//    @GetMapping("/getByCondition2")
+//    public List<CourseClassDTO> getCourseByCondition(@RequestBody CourseClassDTO courseClassDTO) {
+//        List<CourseClassDTO> courseClassDTOS=courseMapper.selectByConditions(courseClassDTO.getCredit(),courseClassDTO.getType(),courseClassDTO.getDeptName(),courseClassDTO.getIsFull());
+//
+//
+//        return courseClassDTOS;
+//    }
     @ApiOperation("通过学生Id来获取课程")
     @GetMapping("/getBystudentId")
     public List<CourseClassDTO> getCourseByStudentId(String studentId) {

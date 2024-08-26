@@ -25,18 +25,12 @@ public interface CourseMapper {
     List<Course> getCourseByNameLike(@Param("name") String name);
 
     @Select("<script>"+"select * from course NATURAL JOIN courseclass where 1=1"
-            +"<if test='code!=null'> AND code=#{code}</if>"
-            +"<if test='name!=null'> AND name=#{name}</if>"
             +"<if test='credit!=null'> AND credit=#{credit}</if>"
-            +"<if test='type!=null'> AND type=#{type}</if>"
-            +"<if test='deptName!=null'> AND deptName=#{deptName}</if>"
-            +"<if test='classNumber!=null'> AND classNumber=#{classNumber}</if>"
-            +"<if test='teacherName!=null'> AND teacherName=#{teacherName}</if>"
-            +"<if test='capacity!=null'> AND capacity=#{capacity}</if>"
-            +"<if test='selectedNumber!=null'> AND selectedNumber=#{selectedNumber}</if>"
+            +"<if test='type!=null and type!=\"\"'> AND type=#{type}</if>"
+            +"<if test='deptName!=null and deptName!=\"\"'> AND deptName=#{deptName}</if>"
             +"<if test='isFull!=null'> AND isFull=#{isFull}</if>"
             +"</script>")
-    List<CourseClassDTO> selectByConditions(String code, String name, Float credit, String type, String deptName, String classNumber, String teacherName, Integer capacity, Integer selectedNumber, Integer isFull);
+    List<CourseClassDTO> selectByConditions(Float credit, String type, String deptName, Integer isFull);
 
     @Select("select * from course natural join courseclass natural join takes where studentid=#{studentid}")
     List<CourseClassDTO> courseClassByStudentId(@Param("studentid") String studentid);
