@@ -1,48 +1,55 @@
 package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.entity.StudentStatistics;
+import com.test.trainingprogrambackend.mapper.DormitoryMapper;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@Api("后台管理系统操作")
+@Api("后台管理系统数据")
 public class BackstageController {
     @Autowired
     private StudentMapper studentMapper;
 
-    //返回完成账号激活、选课总人数、选择申请宿舍、信息录入、注册以及总学生数
-    @GetMapping("/backstage/registrationNum")
+    @Autowired
+    private DormitoryMapper dormitoryMapper;
+
+    //返回完成账号激活、选课总人数、选择申请宿舍、信息录入、注册以及总学生数，用于进度展示
+    @GetMapping("/backstage/process")
     public StudentStatistics registrationNum() {
         return studentMapper.findAllStatistics();
     }
 
-//    //各班级完成注册人数
-//    @GetMapping("/backstage/classRegistrationNum")
-//    public List<Integer> classRegistrationNum() {
-//
-//    }
-//
-//    //各班级完成信息录入人数
-//    @GetMapping("/backstage/classLogNum")
-//    public List<Integer> classLogNum() {
-//
-//    }
-//
-//    //各班级完成选择申请宿舍人数
-//    @GetMapping("/backstage/classApplyDorNum")
-//    public List<Integer> classApplyDorNum() {
-//
-//    }
-//
-//    //各班级完成选课人数
-//    @GetMapping("/backstage/classChooseCourseNum")
-//    public List<Integer> classChooseCourseNum() {
-//
-//    }
+    // 用于中心旭日图，各班级完成注册人数、各专业实际人数、各学院实际人数
+    @GetMapping("/backstage/sunChart")
+    public Map<String, Object> sunChartNum() {
+        Map<String, Object> statSumChat = new HashMap<>();
+        statSumChat.put("registeredNumByClass", studentMapper.countRegisteredNumByClass());
+        statSumChat.put("studentByMajor", studentMapper.countStudentsByMajor());
+        statSumChat.put("studentByDept", studentMapper.countStudentsByDept());
+        return statSumChat;
+    }
 
+
+    // 用于宿舍情况展示，各园区床位总数和入住人数统计情况
+    @GetMapping("/backstage/dorSituation")
+    public Map<String, Object> dorSituation() {
+        Map<String, Object> dorBedNum = new HashMap<>();
+        dorBedNum.put("totalBedsByArea", dormitoryMapper.countTotalBedsByArea());
+        dorBedNum.put("totalResidentsByArea", dormitoryMapper.countTotalResidentsByArea());
+        return dorBedNum;
+    }
+
+//    // 用于文字展示，床位总数和申请住宿、不申请住宿人数、
+//    @GetMapping("/backstage/bedApply")
+//    public List<Integer> bedApplyNum() {
+//
+//    }
 }
