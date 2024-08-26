@@ -50,13 +50,13 @@ public class DormitoryController {
     }
     // 客户端接口
 
-    @ApiOperation("学生是否申请宿舍")
+    @ApiOperation("客户端学生是否申请宿舍")
     @PostMapping("/isApply")
     public Result isApply(@RequestParam String studentid, @RequestParam int dorStatus){
         return dormitoryService.isApplyDor(studentid, dorStatus) == 1 ? Result.ok().message("选择是否申请成功") : Result.error().message("选择是否申请成功失败");
     }
 
-    @ApiOperation("学生查看宿舍信息")
+    @ApiOperation("客户端学生查看宿舍信息")
     @GetMapping("/viewDor")
     public Dormitory viewDor(@RequestParam String studentid){
         return dormitoryService.findDorByStudentId(studentid);
