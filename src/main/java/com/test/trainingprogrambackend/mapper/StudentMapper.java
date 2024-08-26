@@ -27,6 +27,14 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Update("update student set dorName = #{dorName} where id = #{id}")
     void updateDorName(@Param("id") int id, @Param("dorName") String dorName);
 
+    //通过idCard找学生
+    @Select("select * from student where idCard=#{idCard}")
+    Student findByIdCard(@Param("idCard") String idCard);
+
+    //通过idCard找到学生激活账户
+    @Update("update student set password=#{password},email=#{email},status=#{status} where idCard=#{idCard}")
+    int register(@Param("idCard") String idCard,@Param("email") String email, @Param("password") String password, @Param("status") int status);
+
     //用手机注册
     @Update("update student set password=#{password},status=#{status} where phone=#{phone}")
     int registerByPhone(@Param("phone") String phone,@Param("password") String password,int status);

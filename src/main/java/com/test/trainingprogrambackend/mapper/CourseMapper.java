@@ -29,8 +29,10 @@ public interface CourseMapper {
             +"<if test='type!=null and type!=\"\"'> AND type=#{type}</if>"
             +"<if test='deptName!=null and deptName!=\"\"'> AND deptName=#{deptName}</if>"
             +"<if test='isFull!=null'> AND isFull=#{isFull}</if>"
+            +"<if test='teacherName!=null and teacherName!=\"\"'> AND teacherName=#{teacherName}</if>"
+            +"<if test='code!=null and code!=\"\"'> AND code=#{code}</if>"
             +"</script>")
-    List<CourseClassDTO> selectByConditions(Float credit, String type, String deptName, Integer isFull);
+    List<CourseClassDTO> selectByConditions(Float credit, String type, String deptName, Integer isFull,String teacherName,String code);
 
     @Select("select * from course natural join courseclass natural join takes where studentid=#{studentid}")
     List<CourseClassDTO> courseClassByStudentId(@Param("studentid") String studentid);
