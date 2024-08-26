@@ -7,5 +7,4 @@ public class Takes {
     private String studentid;
     private String classNumber;
 
-
 }

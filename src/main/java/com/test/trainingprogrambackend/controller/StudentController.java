@@ -109,7 +109,7 @@ public class StudentController {
     @GetMapping("/info")
     public Result info(@RequestHeader("Authorization") String token) {
         String StudentIdCard=JwtUtils.getClaimsByToken(token).getSubject();
-        Student student=studentMapper.findByName(StudentIdCard);
+        Student student=studentMapper.findByIdCard(StudentIdCard);
         return Result.ok().data("Student",student).message("成功获取学生");
     }
 

@@ -1,7 +1,9 @@
 package com.test.trainingprogrambackend.controller;
 
 
+import com.test.trainingprogrambackend.entity.Student;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
+import com.test.trainingprogrambackend.util.JwtUtils;
 import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +39,7 @@ public class FileUploadController {
 
     @ApiOperation("上传图片")
     @PostMapping("/upload/image")
-    public Result upload(MultipartFile image)throws IOException {
+    public Result upload(MultipartFile image, String token)throws IOException {
         // 获取图片的原始名称
         System.out.println(image.getOriginalFilename());
         //设置图片新名称
@@ -52,7 +54,12 @@ public class FileUploadController {
         String path = "/images/"+imageName;
 
         System.out.println(path);
-        int success =studentMapper.updateImgUrl(path);
+
+        //获取token
+        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
+        Student student=studentMapper.findByIdCard(StudentIdCard);
+
+        int success =studentMapper.updateImageUrl(path, student.getStudentid());
         if(success==1){
             return Result.ok().data("path",path).message("图片上传成功");
         }

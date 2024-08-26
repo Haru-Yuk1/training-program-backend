@@ -1,11 +1,14 @@
 package com.test.trainingprogrambackend.Service;
 
 import com.test.trainingprogrambackend.entity.Takes;
+import com.test.trainingprogrambackend.mapper.CourseMapper;
+import com.test.trainingprogrambackend.mapper.StudentMapper;
 import com.test.trainingprogrambackend.mapper.TakesMapper;
 import com.test.trainingprogrambackend.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +17,19 @@ public class TakesService {
     @Autowired
     private TakesMapper takesMapper;
 
+    @Autowired
+    private StudentMapper studentMapper;
 
     public Result takesOperation(String studentid, String classNumber){
+        if(takesMapper.findByClassNumber(classNumber)==null){
+            return Result.error().message("错误课程码");
+        }
+        if(studentMapper.findByStudentid(studentid)==null){
+            return Result.error().message("学生学号id错误");
+        }
+
         Map<String, Object> courseClass = takesMapper.isClassFull(classNumber);
+
         int selectedNum = (int) courseClass.get("selectedNumber");
         int capacity = (int) courseClass.get("capacity");
         int isFull = (int) courseClass.get("isFull");
@@ -25,12 +38,16 @@ public class TakesService {
             return Result.error().message("课程已选满");
         }
         else{
-            List<Takes> takes=takesMapper.findAll();
-            for(Takes t:takes){
-                if(t.getClassNumber().equals(classNumber)&& t.getStudentid().equals(studentid)){
-                    return Result.error().message("你已选择课程");
+            List<Takes> takes=takesMapper.findByStudentid(studentid);
+
+            if(!takes.isEmpty()){
+                for(Takes t:takes){
+                    if(t.getClassNumber().equals(classNumber)){
+                        return Result.error().message("你已选择课程");
+                    }
                 }
             }
+
 
             takesMapper.insertTakes(studentid,classNumber);
             takesMapper.updateCourseClass(classNumber,selectedNum+1);
@@ -40,6 +57,27 @@ public class TakesService {
             }
             return Result.ok().message("选课成功");
         }
+    }
+    public Result deleteTakesOperation(String studentid, String classNumber){
+        Map<String, Object> courseClass = takesMapper.isClassFull(classNumber);
+
+        int selectedNum = (int) courseClass.get("selectedNumber");
+        int capacity = (int) courseClass.get("capacity");
+        int isFull = (int) courseClass.get("isFull");
+
+        List<Takes> takes=takesMapper.findByStudentid(studentid);
+        System.out.println(takes);
+        if(takes.isEmpty()){
+            return Result.error().message("你未选该课程");
+        }
+
+        takesMapper.deleteByStudentid(studentid);
+        takesMapper.updateCourseClass(classNumber,selectedNum-1);
+        if(selectedNum-1<capacity){
+            takesMapper.updateFull(classNumber,0);
+
+        }
+        return Result.ok().message("退课成功");
     }
 
 

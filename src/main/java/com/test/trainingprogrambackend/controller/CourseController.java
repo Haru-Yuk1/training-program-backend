@@ -81,14 +81,19 @@ public class CourseController {
     }
 
     @ApiOperation("选课操作")
-    @PostMapping("/updateTakes")
-    public Result updateTakes(String studentId, String classNumber) {
-        return  takesService.takesOperation(studentId,classNumber);
+    @PostMapping("/takeClass")
+    public Result updateTakes(@RequestBody Takes takes) {
+        return  takesService.takesOperation(takes.getStudentid(),takes.getClassNumber());
     }
     @ApiOperation("获取选课表")
     @GetMapping("/getTakes")
     public List<Takes> getAllTakes() {
         return  takesMapper.findAll();
+    }
+    @ApiOperation("退课操作")
+    @PostMapping("/dropClass")
+    public Result deleteTakes(@RequestBody Takes takes) {
+        return  takesService.deleteTakesOperation(takes.getStudentid(),takes.getClassNumber());
     }
 
 }

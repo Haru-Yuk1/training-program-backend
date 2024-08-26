@@ -20,8 +20,6 @@ public interface StudentMapper extends BaseMapper<Student> {
                 "count(*) as totalCount " + "from student")
     StudentStatistics findAllStatistics();
 
-
-    // 宿舍操作
     //获取所有学生
     @Select("select * from student")
     List<Student> findAll();
@@ -43,9 +41,12 @@ public interface StudentMapper extends BaseMapper<Student> {
     boolean updateDorNameById(@Param("studentid") String studentid, @Param("dorName") String dorName);
 
     // 登录操作
+
     //通过idCard找学生
     @Select("select * from student where idCard=#{idCard}")
     Student findByIdCard(@Param("idCard") String idCard);
+    @Select("select * from student where studentid=#{studentid}")
+    Student findByStudentid(String studentid);
 
     //通过idCard找到学生激活账户
     @Update("update student set password=#{password},email=#{email},status=#{status} where idCard=#{idCard}")
@@ -66,12 +67,11 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student where email=#{email} and password=#{password}")
     Student loginByEmail(@Param("email") String email, @Param("password") String password);
 
-    //更新学生的头像图片地址
-    @Update("update student set imgUrl=#{imgUrl}")
-    int updateImgUrl(@Param("imgUrl") String imgUrl);
+    @Update("update student set imageUrl=#{imageUrl} where studentid=#{studentid}")
+    int updateImageUrl(@Param("imageUrl") String imageUrl,String studentid);
 
 
-//    @Update("update student set name=#{name},idCard=#{idCard},major=#{major},classes=#{classes},studentid=#{studentid},nation=#{nation},address=#{address} where phone=#{phone}")
+    //    @Update("update student set name=#{name},idCard=#{idCard},major=#{major},classes=#{classes},studentid=#{studentid},nation=#{nation},address=#{address} where phone=#{phone}")
 //    int updateInformation(String name,String idCard,String major,String classes, String studentid,String nation,String address,String phone);
 
 
