@@ -30,4 +30,7 @@ public class Student {
     private int isFinishSelect;
     private int dorStatus;
     private int isFinishLog;
+    private String imagUrl;
+
+
 }

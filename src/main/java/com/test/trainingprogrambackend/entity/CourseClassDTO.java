@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class CourseClassDTO {
-    private char code;
+    private String code;
     private String name;
-    private Integer credit;
+    private Float credit;
     private String type;
     private String deptName;
     private String classNumber;

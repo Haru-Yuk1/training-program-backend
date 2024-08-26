@@ -2,6 +2,8 @@ package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.entity.Student;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
+import com.test.trainingprogrambackend.util.JwtUtils;
+import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,13 @@ import java.util.List;
 @RestController
 @CrossOrigin(maxAge = 36000)
 @Api(tags = "学生信息操作")
+@RequestMapping("/student")
 public class StudentController {
     @Autowired
     private StudentMapper studentMapper;
 
     @ApiOperation("获取所有学生（测试用）")
-    @GetMapping("/student")
+    @GetMapping("/test")
     List<Student> getAllStudents() {
         List<Student> students=studentMapper.findAll();
         return students;
@@ -34,30 +37,53 @@ public class StudentController {
 //    }
 
     @ApiOperation("通过手机注册")
-    @PutMapping("/student/registerByPhone")
-    public String registerByPhone(String phone,String password) {
+    @PutMapping("/registerByPhone")
+    public Result registerByPhone(String phone, String password) {
         int success=studentMapper.registerByPhone(phone,password,1);
-
-        return success==1?"success":"fail";
+        if(success==1){
+            return Result.ok().message("注册成功");
+        }
+        return Result.error().message("注册失败");
     }
     @ApiOperation("通过邮箱注册")
-    @PutMapping("/student/registerByEmail")
-    public String registerByEmail(String email,String password) {
+    @PutMapping("/registerByEmail")
+    public Result registerByEmail(String email,String password) {
         int success=studentMapper.registerByEmail(email,password,1);
-        return success==1?"success":"fail";
+        if(success==1){
+            return Result.ok().message("注册成功");
+        }
+        return Result.error().message("注册失败");
     }
 
     @ApiOperation("通过手机登录")
-    @PostMapping("/student/loginByPhone")
-    public Student loginByPhone(String phone,String password) {
+    @PostMapping("/loginByPhone")
+    public Result loginByPhone(String phone,String password) {
         Student student=studentMapper.loginByPhone(phone,password);
-        return student;
+        String token = JwtUtils.generateToken(student.getName());
+
+        return Result.ok().data("token",token);
     }
     @ApiOperation("通过邮箱登录")
-    @PostMapping("/student/loginByEmail")
-    public Student loginByEmail(String email,String password) {
+    @PostMapping("/loginByEmail")
+    public Result loginByEmail(String email,String password) {
         Student student=studentMapper.loginByEmail(email,password);
-        return student;
+        String token = JwtUtils.generateToken(student.getName());
+
+        return Result.ok().data("token",token);
+    }
+
+    @ApiOperation("登录后使用token来获取信息")
+    @GetMapping("/info")
+    public Result info(@RequestHeader("Authorization") String token) {
+        String StudentName=JwtUtils.getClaimsByToken(token).getSubject();
+        Student student=studentMapper.findByName(StudentName);
+        return Result.ok().data("Student",student).message("成功获取学生");
+    }
+
+    @PostMapping("/logout")
+    public Result logout() {
+
+        return Result.ok();
     }
 
 //    @ApiOperation("通过手机来更新信息")

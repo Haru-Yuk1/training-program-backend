@@ -1,51 +1,58 @@
 package com.test.trainingprogrambackend.controller;
 
 
-import com.test.trainingprogrambackend.Service.emailService;
+import com.test.trainingprogrambackend.Service.EmailService;
+import com.test.trainingprogrambackend.util.JwtUtils;
+import com.test.trainingprogrambackend.util.Result;
+import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @RestController
 @Api(tags = "邮箱验证码操作")
+@CrossOrigin(maxAge = 100000)
+@RequestMapping("/email")
 public class EmailController {
     @Autowired
-    private emailService emailService;
+    private EmailService emailService;
 
     @ApiOperation("发送邮箱验证码")
-    @GetMapping("/email/sendCode")
-    public String sendCode(String to, HttpSession httpSession) {
+    @GetMapping("/sendCode")
+    public Result sendCode(String to) {
+
         if(to==null){
-            return "邮箱未填写";
+            return Result.error().message("邮箱为空");
         }
         try{
             String randomCode=emailService.sendMail(to);
-            httpSession.setAttribute("Code", randomCode);
-            System.out.println(httpSession.getId());
-            return "验证码已发送到指定邮箱"+randomCode;
+            String token= JwtUtils.generateEmailToken(to,randomCode);
+            System.out.println(token);
+            return Result.ok().data("token",token).message("邮箱验证码发送成功");
+
 
         }catch(Exception e){
             e.printStackTrace();
-            return "验证码发送失败";
+            return Result.error().message("邮箱验证码发送失败");
         }
     }
     @ApiOperation("验证邮箱验证码")
-    @GetMapping("/email/checkCode")
-    public String checkCode(String code, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return "验证码未发送";
+    @GetMapping("/checkCode")
+    public Result checkCode(String code, @RequestHeader("Authorization") String token) {
+        Claims claims = JwtUtils.getClaimsByToken(token);
+
+        System.out.println(claims.get("code"));
+        String storedCode = (String) claims.get("code");
+        if(storedCode==null){
+            return Result.error().message("验证码找不到了");
         }
-        System.out.println("Session Id:"+session.getId());
-        String Code=(String)session.getAttribute("Code");
-        if(code.equals(Code)) {
-            return "验证码正确";
+        if(storedCode.equals(code)) {
+            return Result.ok().message("验证码正确");
         }
-        return "验证码错误";
+        return Result.error().message("验证码错误");
     }
 }

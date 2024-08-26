@@ -3,6 +3,7 @@ package com.test.trainingprogrambackend.controller;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
+import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,7 +22,7 @@ public class GraphCodeController {
 
     @ApiOperation("获取图片验证码")
     @GetMapping("/getGraphCode")
-    public void getGraphCode(HttpServletResponse response,HttpSession httpSession) {
+    public Result getGraphCode(HttpServletResponse response, HttpSession httpSession) {
         //随机生成4位验证码
         RandomGenerator randomGenerator= new RandomGenerator("0123456789",4);
 
@@ -36,8 +37,10 @@ public class GraphCodeController {
             httpSession.setAttribute("Code", lineCaptcha.getCode());
             System.out.println(httpSession.getId());
             response.getOutputStream().close();
+            return Result.ok().message("验证码生成成功");
         }catch (IOException e){
             e.printStackTrace();
+            return Result.error().message("验证码生成失败");
         }
     }
     @ApiOperation("验证图片验证码")
