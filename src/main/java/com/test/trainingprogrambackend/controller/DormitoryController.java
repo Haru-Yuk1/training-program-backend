@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Dictionary;
@@ -15,50 +16,52 @@ import java.util.List;
 
 @RestController
 @Api(tags = "分配宿舍")
+@RequestMapping("/dor")
 public class DormitoryController {
     @Autowired
     private DormitoryService dormitoryService;
 
     // 后台管理系统接口
-    @GetMapping("/dor/assignDor")
+    @GetMapping("/assignDor")
     @ApiOperation("后台分配宿舍并返回分配结果")
     public List<Dormitory> assignDor(){
         return dormitoryService.assignDor();
     }
 
-    @GetMapping("/dor/getNotFullDorByClasses")
+    @GetMapping("/getNotFullDorByClasses")
     @ApiOperation("后台获取对应班级未满宿舍信息")
     public List<Dormitory> getNotFullDorByClasses(String classes){
         return dormitoryService.findNotFullDorByClasses(classes);
     }
 
-    @GetMapping("/dor/refreshDor")
+    @GetMapping("/refreshDor")
     @ApiOperation("后台刷新宿舍信息")
     public List<Dormitory> refreshDor(){
         return dormitoryService.refreshDor();
     }
 
-    @PostMapping("/dor/adjustByNotFullDor")
+    @PostMapping("/adjustByNotFullDor")
     @ApiOperation("后台调整学生至非满宿舍")
     public Result adjustByNotNullDor(String studentid, String dorName){
         dormitoryService.adjustDorByNotFullDor(studentid, dorName);
         return Result.ok().message("调整成功");
     }
 
-    @PostMapping("/dor/adjustByExchange")
+    @PostMapping("/adjustByExchange")
     @ApiOperation("后台交换学生宿舍")
-    public Result adjustByExchange(String studentid1, String studentid2){
+    public Result adjustByExchange(String studentid1, String studentid2) {
         dormitoryService.adjustDorByExchange(studentid1, studentid2);
         return Result.ok().message("交换成功");
-
+    }
     // 客户端接口
-    @PostMapping("/dor/isApply")
+
     @ApiOperation("学生是否申请宿舍")
-    public R isApply(String studentid, int dorStatus){
-        return dormitoryService.isApplyDor(studentid, dorStatus) == 1 ? R.success(200, "选择是否申请成功", null) : R.fail(1001, "选择是否申请失败");
+    @PostMapping("/isApply")
+    public Result isApply(String studentid, int dorStatus){
+        return dormitoryService.isApplyDor(studentid, dorStatus) == 1 ? Result.ok().message("选择是否申请成功") : Result.error().message("选择是否申请成功失败");
     }
 
-    @PostMapping("/dor/viewDor")
+    @PostMapping("/viewDor")
     @ApiOperation("学生查看宿舍信息")
     public Dormitory viewDor(String studentid){
         return dormitoryService.findDorByStudentId(studentid);
