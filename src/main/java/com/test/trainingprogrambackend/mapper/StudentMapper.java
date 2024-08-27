@@ -113,6 +113,10 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student")
     List<Student> findAll();
 
+    //查询除了密码外的其他信息
+//    @Select("select id, name, nation, gender, birthday, phone, email, idCard, address, major, classes, studentid, dorName, deptName, status, isFinishSelect, dorStatus, isFinishLog, imageUrl from student")
+//    List<Student> query();
+
     //通过学生名字获取学生信息
     @Select("select * from student where name=#{name}")
     Student findByName(String name);
