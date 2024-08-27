@@ -24,6 +24,7 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512,secret)
                 .compact();
     }
+
     //生成邮箱token
     public static String generateEmailToken(String to,String code) {
         Date now = new Date();

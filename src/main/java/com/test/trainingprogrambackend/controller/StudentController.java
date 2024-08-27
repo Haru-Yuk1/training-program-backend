@@ -214,9 +214,9 @@ public class StudentController {
             return Result.error().message("未找到该学生");
         }
 //        int success=studentMapper.updateStudentInfo(student.getPhone(),student.getEmail(),student.getAddress(),student.getIdCard());
-        Student studentUpdate=studentMapper.updateStudentInfo(student.getEmail(),student.getAddress(),student.getIdCard());
-        if(student!=studentUpdate){
-            return Result.ok().data("studentUpdate",studentUpdate).message("更新成功");
+        int success=studentMapper.updateStudentInfo(student.getEmail(),student.getAddress(),student.getIdCard());
+        if(success==1){
+            return Result.ok().message("更新成功");
         }
         return Result.error().message("更新失败");
     }
