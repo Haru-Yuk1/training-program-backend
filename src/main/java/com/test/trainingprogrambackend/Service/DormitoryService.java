@@ -79,4 +79,8 @@ public class DormitoryService {
     public Dormitory findDorByStudentId(String studentid) {
         return dormitoryMapper.getByDorNameWithStudent(studentMapper.findDorNameById(studentid));
     }
+
+    public int updateStudentPreference(String studentid, String preference) {
+        return studentMapper.updatePreferenceById(studentid, preference);
+    }
 }

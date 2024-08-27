@@ -90,6 +90,14 @@ public class BackOperateController {
         return studentMapper.findAll();
     }
 
+    @ApiOperation("查看学生密码")
+    @GetMapping("/student/queryPassword")
+    public boolean queryStudentPassword(@RequestHeader("Authorization") String token){
+        String userId = JwtUtils.getClaimsByToken(token).getSubject();
+        User user = userMapper.queryRoleAndStatus(userId);
+        return (user.getRole().equals("学生管理员") || user.getRole().equals("系统管理员")) && user.getStatus().equals("正常");
+    }
+
     @ApiOperation("传递 studentid 进行删除")
     @PostMapping("/student/delete")
     public Result deleteStudent(@RequestParam String studentid, @RequestHeader("Authorization") String token){

@@ -113,6 +113,10 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student")
     List<Student> findAll();
 
+    //查询除了密码外的其他信息
+//    @Select("select id, name, nation, gender, birthday, phone, email, idCard, address, major, classes, studentid, dorName, deptName, status, isFinishSelect, dorStatus, isFinishLog, imageUrl from student")
+//    List<Student> query();
+
     //通过学生名字获取学生信息
     @Select("select * from student where name=#{name}")
     Student findByName(String name);
@@ -132,6 +136,8 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Update("update student set dorStatus = #{dorStatus} where studentid = #{studentid}")
     int updateDorStatusById(@Param("studentid") String studentid, @Param("dorStatus") int dorStatus);
 
+    @Update("update student set preference = #{preference} where studentid = #{studentid}")
+    int updatePreferenceById(@Param("studentid") String studentid, @Param("preference") String preference);
     // 登录操作
 
     //通过idCard找学生
