@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class User {
     private int id;
-    private String userName;
+    private String userId;
     private String password;
     private String phone;
     private String peoName;
@@ -17,5 +17,5 @@ public class User {
     private Date createDate;
 
     @TableField(exist = false)
-    private String originalUserName; // 原始用户名
+    private String originalUserId; // 原始工号
 }
