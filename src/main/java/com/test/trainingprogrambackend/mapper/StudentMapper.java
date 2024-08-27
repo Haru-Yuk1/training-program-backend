@@ -136,6 +136,8 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Update("update student set dorStatus = #{dorStatus} where studentid = #{studentid}")
     int updateDorStatusById(@Param("studentid") String studentid, @Param("dorStatus") int dorStatus);
 
+    @Update("update student set preference = #{preference} where studentid = #{studentid}")
+    int updatePreferenceById(@Param("studentid") String studentid, @Param("preference") String preference);
     // 登录操作
 
     //通过idCard找学生

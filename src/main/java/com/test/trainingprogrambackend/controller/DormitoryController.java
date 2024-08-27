@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Dictionary;
 import java.util.List;
 
 @RestController
@@ -48,8 +47,8 @@ public class DormitoryController {
     public Result adjustByExchange(@RequestParam String studentid1, @RequestParam String studentid2) {
         return dormitoryService.adjustDorByExchange(studentid1, studentid2) == 1? Result.ok().message("交换成功") : Result.error().message("交换失败");
     }
-    // 客户端接口
 
+    // 客户端接口
     @ApiOperation("客户端学生是否申请宿舍")
     @PostMapping("/isApply")
     public Result isApply(@RequestParam String studentid, @RequestParam int dorStatus){
@@ -60,5 +59,11 @@ public class DormitoryController {
     @GetMapping("/viewDor")
     public Dormitory viewDor(@RequestParam String studentid){
         return dormitoryService.findDorByStudentId(studentid);
+    }
+
+    @ApiOperation("接受学生偏好信息")
+    @PostMapping("/acceptPreference")
+    public Result acceptPreference(@RequestParam String studentid, @RequestParam String preference){
+        return dormitoryService.updateStudentPreference(studentid, preference) == 1 ? Result.ok().message("接受偏好成功") : Result.error().message("接受偏好失败");
     }
 }
