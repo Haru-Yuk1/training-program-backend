@@ -11,8 +11,8 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
     //基础功能
     //添加用户
-    @Insert("INSERT INTO User (userName, phone, peoName, role, status, createDate) " +
-            "VALUES (#{userName}, #{phone}, #{peoName}, #{role}, #{status}, #{createDate})")
+    @Insert("INSERT INTO User (userId, phone, peoName, role, status, createDate) " +
+            "VALUES (#{userId}, #{phone}, #{peoName}, #{role}, #{status}, #{createDate})")
     int insert(User user);
 
     //修改用户
@@ -24,8 +24,8 @@ public interface UserMapper extends BaseMapper<User> {
         public String updateUser(@Param("user") User user) {
             return new SQL() {{
                 UPDATE("User");
-                if (user.getUserName() != null && !user.getUserName().isEmpty()) {
-                    SET("userName = #{user.userName}");
+                if (user.getUserId() != null && !user.getUserId().isEmpty()) {
+                    SET("userId = #{user.userId}");
                 }
                 if (user.getPhone() != null && !user.getPhone().isEmpty()) {
                     SET("phone = #{user.phone}");
@@ -42,20 +42,20 @@ public interface UserMapper extends BaseMapper<User> {
                 if (user.getCreateDate() != null) {
                     SET("createDate = #{user.createDate}");
                 }
-                WHERE("userName = #{user.originalUserName}");
+                WHERE("userId = #{user.originalUserId}");
             }}.toString();
         }
     }
 
     //删除用户
-    @Delete("DELETE FROM User WHERE userName = #{userName}")
-    int delete(@Param("userName") String userName);
+    @Delete("DELETE FROM User WHERE userId = #{userId}")
+    int delete(@Param("userId") String userId);
 
-    @Select("select userName, phone, peoName, role, status, createDate from user")
+    @Select("select userId, phone, peoName, role, status, createDate from user")
     public List<User> query();
 
     //用于检测权限和状态
-    @Select("select role, status from user where userName = #{userName}")
-    public User queryRoleAndStatus(@Param("userName") String userName);
+    @Select("select role, status from user where userId = #{userId}")
+    public User queryRoleAndStatus(@Param("userId") String userId);
 
 }
