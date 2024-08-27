@@ -1,18 +1,18 @@
 package com.test.trainingprogrambackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
-
 import com.test.trainingprogrambackend.entity.Student;
 import com.test.trainingprogrambackend.entity.StudentStatistics;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.jdbc.SQL;
 
 import java.util.List;
 import java.util.Map;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
-    // 后台管理操作
+    // 后台数据获取操作
+        // 获取学生数据
     @Select("select " +
     "sum(case when status=1 then 1 else 0 end) as ActivateNum," +
        "sum(case when isFinishSelect=1 then 1 else 0 end) as chooseNum," +
@@ -22,33 +22,93 @@ public interface StudentMapper extends BaseMapper<Student> {
                 "count(*) as totalCount " + "from student")
     StudentStatistics findAllStatistics();
 
-    // 统计申请住宿的人数
+        // 统计申请住宿的人数
     @Select("SELECT COUNT(*) AS applyDorm FROM student WHERE dorStatus = 1")
     int countApplyDorm();
 
-    // 统计不申请住宿的人数
+        // 统计不申请住宿的人数
     @Select("SELECT COUNT(*) AS notApplyDorm FROM student WHERE dorStatus = 2")
     int countNotApplyDorm();
 
-    // 统计各班级完成注册人数
+        // 统计各班级完成注册人数
     @Select("SELECT classes, COUNT(*) AS registeredCount " +
             "FROM student " +
             "WHERE status = 1 AND isFinishSelect = 1 AND dorStatus IN (1, 2) AND isFinishLog = 1 " +
             "GROUP BY classes")
     List<Map<String, Object>> countRegisteredNumByClass();
 
-    // 统计各专业实际人数
+        // 统计各专业实际人数
     @Select("SELECT major, COUNT(*) AS studentCount " +
             "FROM student " +
             "GROUP BY major")
     List<Map<String, Object>> countStudentsByMajor();
 
-    // 统计各学院实际人数
+        // 统计各学院实际人数
     @Select("SELECT deptName, COUNT(*) AS studentCount " +
             "FROM student " +
             "GROUP BY deptName")
     List<Map<String, Object>> countStudentsByDept();
 
+    // 后台学生操作
+    // 注意插入的是姓名、民族、性别、生日、身份证号码、地址、专业、班级、学号、所属学院
+    @Insert("INSERT INTO student (name, nation, gender, birthday, idCard, address, major, classes, studentid, deptName) " +
+            "VALUES (#{name}, #{nation}, #{gender}, #{birthday}, #{idCard}, #{address}, #{major}, #{classes}, #{studentid}, #{deptName})")
+    int insertStudent(Student student);
+
+    @Delete("DELETE FROM student WHERE studentid = #{studentid}")
+    int deleteStudent(@Param("studentid") String studentid);
+
+    // 注意不能更新学生宿舍，只能更新学生的信息，可以更改学生密码
+    @UpdateProvider(type = SqlProvider.class, method = "updateStudent")
+    int updateStudent(@Param("student") Student student);
+
+    class SqlProvider {
+        public String updateStudent(@Param("student") Student student) {
+            return new SQL() {{
+                UPDATE("student");
+                if (student.getName() != null && !student.getName().isEmpty()) {
+                    SET("name = #{student.name}");
+                }
+                if (student.getNation() != null && !student.getNation().isEmpty()) {
+                    SET("nation = #{student.nation}");
+                }
+                if (student.getGender() != null && !student.getGender().isEmpty()) {
+                    SET("gender = #{student.gender}");
+                }
+                if (student.getBirthday() != null && !student.getBirthday().isEmpty()) {
+                    SET("birthday = #{student.birthday}");
+                }
+                if (student.getPhone() != null && !student.getPhone().isEmpty()) {
+                    SET("phone = #{student.phone}");
+                }
+                if (student.getEmail() != null && !student.getEmail().isEmpty()) {
+                    SET("email = #{student.email}");
+                }
+                if (student.getIdCard() != null && !student.getIdCard().isEmpty()) {
+                    SET("idCard = #{student.idCard}");
+                }
+                if (student.getAddress() != null && !student.getAddress().isEmpty()) {
+                    SET("address = #{student.address}");
+                }
+                if (student.getMajor() != null && !student.getMajor().isEmpty()) {
+                    SET("major = #{student.major}");
+                }
+                if (student.getClasses() != null && !student.getClasses().isEmpty()) {
+                    SET("classes = #{student.classes}");
+                }
+                if (student.getStudentid() != null && !student.getStudentid().isEmpty()) {
+                    SET("studentid = #{student.studentid}");
+                }
+                if (student.getPassword() != null && !student.getPassword().isEmpty()) {
+                    SET("password = #{student.password}");
+                }
+                if (student.getDeptName() != null && !student.getDeptName().isEmpty()) {
+                    SET("deptName = #{student.deptName}");
+                }
+                WHERE("studentid = #{student.originalStudentId}");
+            }}.toString();
+        }
+    }
     //获取所有学生
     @Select("select * from student")
     List<Student> findAll();
@@ -111,7 +171,4 @@ public interface StudentMapper extends BaseMapper<Student> {
 
 //    @Update("update student set stu_name=#{stu_name},idcard=#{idcard},college=#{college},major=#{major},classes=#{classes},stu_id=#{stu_id},nation=#{nation},address=#{address} where email=#{email}")
 //    int updateInformationByEmail(String stu_name,String idcard,String college,String major,String classes, String stu_id,String nation,String address,String email);
-
-
-
 }

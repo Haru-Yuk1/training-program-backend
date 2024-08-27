@@ -1,6 +1,6 @@
 package com.test.trainingprogrambackend.mapper;
 
-import com.mysql.cj.protocol.x.Notice;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.test.trainingprogrambackend.entity.Message;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
@@ -8,7 +8,7 @@ import org.apache.ibatis.jdbc.SQL;
 import java.util.List;
 
 @Mapper
-public interface MessageMapper {
+public interface MessageMapper extends BaseMapper<Message> {
     //添加消息
     @Insert("insert into message (title,content,publishDate) values (#{title},#{content},#{publishDate})")
     int insert(Message message);
@@ -18,7 +18,7 @@ public interface MessageMapper {
     int update(@Param("message") Message message);
 
     class SqlProvider {
-        public String updateMessage(@Param("message") Message message, @Param("title") String title) {
+        public String updateMessage(@Param("message") Message message) {
             return new SQL() {{
                 UPDATE("message");
                 if (message.getTitle() != null && !message.getTitle().isEmpty()) {
