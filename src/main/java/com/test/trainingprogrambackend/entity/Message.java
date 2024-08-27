@@ -10,6 +10,7 @@ public class Message {
     private int id;
     private String title;
     private String content;
+    @TableField("publishDate")
     private Date publishDate;
 
     @TableField(exist = false)
