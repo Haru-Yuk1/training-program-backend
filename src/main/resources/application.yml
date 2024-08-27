@@ -26,9 +26,10 @@ spring:
         "mail.smtp.auth": true
         "mail.smtp.starttls.enable": true
         "mail.smtp.starttls.required": true
+  session:
+    store-type: jdbc
 
-
-
+axios
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

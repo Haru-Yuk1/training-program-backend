@@ -58,4 +58,13 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select role, status from user where userId = #{userId}")
     public User queryRoleAndStatus(@Param("userId") String userId);
 
+
+    //登录操作
+
+    //查找
+    @Select("select * from user where userId=#{userId} ")
+    int selectByUserid(@Param("userId") String userId);
+
+    @Select("select * from user where userId=#{userId} and password=#{password}")
+    User LoginUser(@Param("userId") String userId, @Param("password") String password);
 }

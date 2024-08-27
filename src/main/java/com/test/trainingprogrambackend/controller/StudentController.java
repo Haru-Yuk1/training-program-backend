@@ -71,7 +71,7 @@ public class StudentController {
         if(student.getStatus()==1){
             return Result.error().message("该账号已被激活").code(20002);
         }
-        if(student.getEmail()!=null){
+        if(student.getEmail()!=null&& student.getEmail().isEmpty()){
             return Result.error().message("该邮箱已被注册").code(20003);
         }
         //加密密码
@@ -95,7 +95,7 @@ public class StudentController {
         if(student.getStatus()==1){
             return Result.error().message("该账号已被激活").code(20002);
         }
-        if(student.getPhone()!=null){
+        if(student.getPhone()!=null && student.getPhone().isEmpty()){
             return Result.error().message("该电话已被注册").code(20003);
         }
         //加密密码
@@ -181,7 +181,7 @@ public class StudentController {
     public Result forgetPasswordByPhone(@RequestParam String phone,@RequestParam String password) {
         Student student=studentMapper.findByPhone(phone);
         if(student==null){
-            return Result.error().message("未找到该邮箱");
+            return Result.error().message("未找到该手机");
         }
         String encryptedPassword= MD5Util.encrypt(password);
 

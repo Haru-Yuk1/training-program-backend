@@ -7,6 +7,7 @@ import com.test.trainingprogrambackend.mapper.MessageMapper;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
 import com.test.trainingprogrambackend.mapper.UserMapper;
 import com.test.trainingprogrambackend.util.JwtUtils;
+import com.test.trainingprogrambackend.util.MD5Util;
 import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -169,4 +170,27 @@ public class BackOperateController {
             return Result.error().message("用户不是系统管理员或用户状态不是正常");
         }
     }
+
+
+    //登录操作
+    @ApiOperation("管理员登录")
+    @PostMapping("/loginUser")
+    public Result loginUser(@RequestParam String userId,@RequestParam String password) {
+        String encryptedPassword= MD5Util.encrypt(password);
+
+
+        int isFind=userMapper.selectByUserid(userId);
+        if(isFind==0){
+            return Result.error().message("未找到该用户");
+        }
+        User user=userMapper.LoginUser(userId,encryptedPassword);
+        if (user==null){
+            return Result.error().message("密码错误");
+        }
+
+        String token = JwtUtils.generateToken(userId);
+
+        return Result.ok().data("token",token).message("登录成功");
+    }
+
 }

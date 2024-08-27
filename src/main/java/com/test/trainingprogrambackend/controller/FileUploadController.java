@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,17 +53,16 @@ public class FileUploadController {
         image.transferTo(file);
         System.out.println(uploadPath+imageName);
         //图片后端地址
-        String path = "/images/"+imageName;
+//        String path = "/images/"+imageName;
 
-        System.out.println(path);
+//        System.out.println(path);
 
         //获取token
-
         Student student=studentMapper.findByStudentid(studentid);
 
-        int success =studentMapper.updateImageUrl(path, student.getStudentid());
+        int success =studentMapper.updateImageUrl(imageName, student.getStudentid());
         if(success==1){
-            return Result.ok().data("path",path).message("图片上传成功");
+            return Result.ok().data("imageName",imageName).message("图片上传成功");
         }
         return Result.error().message("图片上传失败");
 
@@ -99,21 +99,50 @@ public class FileUploadController {
 //
 //
 //    }
+
+
+//    @ApiOperation("获取上传的图片")
+//    @GetMapping("/images/{imageName}")
+//    public Result getImage(@PathVariable String imageName) throws IOException {
+//        File file = new File(uploadPath + imageName);
+//        Resource resource = new UrlResource(file.toURI());
+//        return Result.ok().data("resource",resource).message("上传图片成功");
+//    }
+//
+//    @ApiOperation("通过学生id获取照片地址")
+//    @GetMapping("/getImgUrl")
+//    public Result getImgUrl(String studentid) {
+//        Student student = studentMapper.findByStudentid(studentid);
+//        System.out.println(student);
+//        return Result.ok().data("imgUrl",student.getImageUrl());
+//    }
+
+
     @ApiOperation("获取上传的图片")
-    @GetMapping("/images/{imageName}")
-    public Result getImage(@PathVariable String imageName) throws IOException {
-        File file = new File(uploadPath + imageName);
-        Resource resource = new UrlResource(file.toURI());
-
-        return Result.ok().data("resource",resource).message("上传图片成功");
-    }
-
-    @ApiOperation("通过学生id获取照片地址")
-    @GetMapping("/getImgUrl")
-    public Result getImgUrl(String studentid) {
+    @GetMapping("/getImage")
+    public ResponseEntity<Resource> getImageByStudentId(String studentid) throws IOException {
         Student student = studentMapper.findByStudentid(studentid);
-        System.out.println(student);
-        return Result.ok().data("imgUrl",student.getImageUrl());
-    }
 
+        if (student == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        String imageName = student.getImageUrl();
+        if (imageName == null || imageName.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        File file = new File(uploadPath + imageName);
+        if (!file.exists()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Resource resource = new UrlResource(file.toURI());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // 根据实际图片类型设置
+                .body(resource);
+    }
 }

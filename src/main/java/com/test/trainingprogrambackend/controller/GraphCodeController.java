@@ -22,27 +22,25 @@ public class GraphCodeController {
 
     @ApiOperation("获取图片验证码")
     @GetMapping("/getGraphCode")
-    public Result getGraphCode(HttpServletResponse response, HttpSession httpSession) {
-        //随机生成4位验证码
-        RandomGenerator randomGenerator= new RandomGenerator("0123456789",4);
-
+    public void getGraphCode(HttpServletResponse response, HttpSession httpSession) {
+        // 随机生成4位验证码
+        RandomGenerator randomGenerator = new RandomGenerator("0123456789", 4);
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(100, 30);
         response.setContentType("image/jpeg");
         response.setHeader("Pragma", "No-cache");
-        try{
+        try {
             lineCaptcha.setGenerator(randomGenerator);
             lineCaptcha.write(response.getOutputStream());
-            System.out.println("生成的验证码："+lineCaptcha.getCode());
+            System.out.println("生成的验证码：" + lineCaptcha.getCode());
 
             httpSession.setAttribute("Code", lineCaptcha.getCode());
             System.out.println(httpSession.getId());
             response.getOutputStream().close();
-            return Result.ok().message("验证码生成成功");
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-            return Result.error().message("验证码生成失败");
         }
     }
+
     @ApiOperation("验证图片验证码")
     @GetMapping("/checkGraphCode")
     public String checkCode(String code, HttpServletRequest request) {

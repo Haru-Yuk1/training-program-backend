@@ -1,6 +1,7 @@
 package com.test.trainingprogrambackend.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.Data;
 @TableName("student")
 @ApiModel("这是Student实体类")
 public class Student {
-
+    @TableId("id")
     private int id;
     private String name;
     private String nation;
