@@ -15,12 +15,15 @@ public interface CourseMapper {
     //选择所有课程
     @Select("select * from course")
     List<Course> selectAll();
+    //获取所有课程班级
+    @Select("select * from course natural join courseclass")
+    List<CourseClassDTO> selectAllCourseClass();
     //通过课程名字选择课程
     @Select("select * from course natural join courseclass where name=#{name}")
     List<CourseClassDTO> getCourseByName(String name);
     //通过课程编码选择课程
-    @Select("select * from course where code=#{code}")
-    List<Course> getCourseByCode(String code);
+    @Select("select * from course natural join courseclass where code=#{code}")
+    List<CourseClassDTO> getCourseByCode(String code);
     //通过课程名称关键字选择课程
     @Select("select * from course where name like concat('%',#{name},'%')")
     List<Course> getCourseByNameLike(@Param("name") String name);

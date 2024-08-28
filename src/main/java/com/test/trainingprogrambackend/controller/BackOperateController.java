@@ -211,6 +211,24 @@ public class BackOperateController {
 
         return Result.ok().data("token",token).message("登录成功");
     }
+    //忘记密码
+    @ApiOperation("通过手机号找回管理员密码")
+    @PostMapping("/forgetPasswordByPhone")
+    public Result forgetPasswordByPhone(@RequestParam String phone,@RequestParam String password) {
+        User user=userMapper.selectByPhone(phone);
+
+        if(user==null){
+            return Result.error().message("未找到该手机号码");
+        }
+        String encryptedPassword= MD5Util.encrypt(password);
+
+        int success=userMapper.updatePasswordByPhone(phone,encryptedPassword);
+
+        if(success==1){
+            return Result.ok().message("修改成功");
+        }
+        return Result.error().message("修改失败");
+    }
 
 
     //课程操作

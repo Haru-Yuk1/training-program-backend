@@ -186,8 +186,12 @@ public interface StudentMapper extends BaseMapper<Student> {
 
 
     //更新学生表
-    @Update("update student set email=#{email},address=#{address} where idCard=#{idCard}")
+    @Update("update student set email=#{email},address=#{address},isFinishLog=1 where idCard=#{idCard}")
     int updateStudentInfo(String email,String address,String idCard);
+
+    //更新学生选课完成状态
+    @Update("update student set isFinishSelect=1 where idCard=#{idCard}")
+    int updateIsFinishSelect(String idCard);
 
 
 }

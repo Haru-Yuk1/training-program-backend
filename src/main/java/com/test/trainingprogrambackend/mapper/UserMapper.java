@@ -67,4 +67,11 @@ public interface UserMapper extends BaseMapper<User> {
 
     @Select("select * from user where userId=#{userId} and password=#{password}")
     User LoginUser(@Param("userId") String userId, @Param("password") String password);
+
+    @Select("select * from user where phone=#{phone}")
+    User selectByPhone(@Param("phone") String phone);
+
+    // 忘记密码 通过手机
+    @Update("update user set password=#{password} where phone=#{phone}")
+    int updatePasswordByPhone(@Param("phone") String phone, @Param("password") String password);
 }

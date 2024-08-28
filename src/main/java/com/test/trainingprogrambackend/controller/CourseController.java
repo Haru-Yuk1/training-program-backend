@@ -35,18 +35,25 @@ public class CourseController {
         List<Course> courses=courseMapper.selectAll();
         return courses;
     }
+    @ApiOperation("直接获取所有课程班级")
+    @GetMapping("/getAllCourseClass")
+    public List<CourseClassDTO> getAllCourseClass() {
+        List<CourseClassDTO> courseClassDTOS=courseMapper.selectAllCourseClass();
+        return courseClassDTOS;
+    }
 
-    @ApiOperation("通过名字获取课程")
+    @ApiOperation("通过名字获取课程班级")
     @PostMapping("/getByName")
     public List<CourseClassDTO> getCourseByName(@RequestParam String name) {
         List<CourseClassDTO> courseClassDTOS=courseMapper.getCourseByName(name);
         return courseClassDTOS;
     }
-    @ApiOperation("通过编号获取课程")
+
+    @ApiOperation("通过编号获取课程班级")
     @GetMapping("/getByCode")
-    public List<Course> getCourseByCode(String code) {
-        List<Course> courses=courseMapper.getCourseByCode(code);
-        return courses;
+    public List<CourseClassDTO> getCourseByCode(String code) {
+        List<CourseClassDTO> courseClassDTOS=courseMapper.getCourseByCode(code);
+        return courseClassDTOS;
     }
 
     @ApiOperation("通过名字关键词搜索获取课程")
@@ -105,6 +112,19 @@ public class CourseController {
 
         Student student=studentMapper.findByIdCard(StudentIdCard);
         return  takesService.deleteTakesOperation(student.getStudentid(),classNumber);
+    }
+    @ApiOperation("选课完成接口")
+    @PostMapping("/finishTakes")
+    public Result finishTakes(@RequestHeader("Authorization") String token) {
+        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
+
+
+        int success=studentMapper.updateIsFinishSelect(StudentIdCard);
+        if(success==1){
+            return Result.ok().message("更新选课操作成功");
+        }
+        return Result.error().message("更新选课操作失败");
+
     }
 
 
