@@ -1,10 +1,7 @@
 package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.entity.*;
-import com.test.trainingprogrambackend.mapper.MessageMapper;
-import com.test.trainingprogrambackend.mapper.StudentMapper;
-import com.test.trainingprogrambackend.mapper.TakesMapper;
-import com.test.trainingprogrambackend.mapper.UserMapper;
+import com.test.trainingprogrambackend.mapper.*;
 import com.test.trainingprogrambackend.util.JwtUtils;
 import com.test.trainingprogrambackend.util.MD5Util;
 import com.test.trainingprogrambackend.util.Result;
@@ -32,6 +29,9 @@ public class BackOperateController {
     @Autowired
     private TakesMapper takesMapper;
 
+    @Autowired
+    private FeedbackMapper feedbackMapper;
+
     //消息操作
     @ApiOperation("注意不需要传送 date 和 id，传递 title 和 content")
     @PostMapping("/message/insert")
@@ -45,7 +45,7 @@ public class BackOperateController {
             return messageMapper.insert(message) == 1 ? Result.ok().message("插入成功") : Result.error().message("插入失败，插入消息数量不等于1");
         }
         else{
-            return Result.error().message("用户不是通知管理员或用户状态不是正常");
+            return Result.error().message("用户不是通知或系统管理员或用户状态不是正常");
         }
     }
 
@@ -59,7 +59,7 @@ public class BackOperateController {
             return messageMapper.delete(title) == 1 ? Result.ok().message("删除成功") : Result.error().message("删除失败，删除消息数量不等于1");
         }
         else{
-            return Result.error().message("用户不是通知管理员或用户状态不是正常");
+            return Result.error().message("用户不是通知或系统管理员或用户状态不是正常");
         }
     }
 
@@ -75,7 +75,7 @@ public class BackOperateController {
             return messageMapper.update(message) == 1 ? Result.ok().message("更新成功") : Result.error().message("更新失败，更新消息数量不等于1");
         }
         else{
-            return Result.error().message("用户不是通知管理员或用户状态不是正常");
+            return Result.error().message("用户不是通知或系统管理员或用户状态不是正常");
         }
     }
 
@@ -108,7 +108,7 @@ public class BackOperateController {
         if((user.getRole().equals("学生管理员") || user.getRole().equals("系统管理员"))&& user.getStatus().equals("正常"))
             return studentMapper.deleteStudent(studentid) == 1 ? Result.ok().message("删除成功") : Result.error().message("删除失败，删除学生数量不等于1");
         else
-            return Result.error().message("用户不是学生管理员或用户状态不是正常");
+            return Result.error().message("用户不是学生或系统管理员或用户状态不是正常");
     }
 
     @ApiOperation("不需要 id，可以更新学生的信息包括插入所需要的信息和电话、邮箱、密码，另外需要传入原学生的 originalStudentid")
@@ -119,7 +119,7 @@ public class BackOperateController {
         if((user.getRole().equals("学生管理员") || user.getRole().equals("系统管理员"))&& user.getStatus().equals("正常"))
             return studentMapper.updateStudent(student) == 1 ? Result.ok().message("更新成功") : Result.error().message("更新失败，更新学生数量不等于1");
         else
-            return Result.error().message("用户不是学生管理员或用户状态不是正常");
+            return Result.error().message("用户不是学生或系统管理员或用户状态不是正常");
     }
 
     @ApiOperation("注意不需要传送 id，传递新学生的所有信息（包括姓名、民族、性别、生日、身份证号码、地址、专业、班级、学号、所属学院）")
@@ -130,7 +130,7 @@ public class BackOperateController {
         if((user.getRole().equals("学生管理员") || user.getRole().equals("系统管理员")) && user.getStatus().equals("正常"))
             return studentMapper.insertStudent(student) == 1 ? Result.ok().message("插入成功") : Result.error().message("插入失败，插入学生数量不等于1");
         else
-            return Result.error().message("用户不是学生管理员或用户状态不是正常");
+            return Result.error().message("用户不是学生或系统管理员或用户状态不是正常");
     }
 
     //用户操作
@@ -204,96 +204,143 @@ public class BackOperateController {
     }
 
 
-
+    //课程操作
     @ApiOperation("增加课程")
     @PostMapping("/addCourse")
     public Result addCourse(@RequestBody Course course, @RequestHeader("Authorization") String token) {
-        Department department=takesMapper.departByDeptName(course.getDeptName());
-        if(department==null){
-            return Result.error().message("未找到对应学院");
+        String userIdToken = JwtUtils.getClaimsByToken(token).getSubject();
+        User userToken = userMapper.queryRoleAndStatus(userIdToken);
+        if((userToken.getRole().equals("系统管理员") || userToken.getRole().equals("课程管理员")) && userToken.getStatus().equals("正常")){
+            Department department=takesMapper.departByDeptName(course.getDeptName());
+            if(department==null){
+                return Result.error().message("未找到对应学院");
+            }
+            int success=takesMapper.insertCourse(course.getCode(),course.getName(),course.getCredit(), course.getType(), course.getDeptName());
+            if (success==1) {
+                return Result.ok().message("课程增加成功");
+            }
+            return Result.error().message("课程增加失败");
         }
-        int success=takesMapper.insertCourse(course.getCode(),course.getName(),course.getCredit(), course.getType(), course.getDeptName());
-        if (success==1) {
-            return Result.ok().message("课程增加成功");
+        else{
+            return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
         }
-        return Result.error().message("课程增加失败");
     }
 
     @ApiOperation("删除课程")
     @PostMapping("/deleteCourse")
     public Result deleteCourse(@RequestBody Course course, @RequestHeader("Authorization") String token) {
-        if (takesMapper.courseByCode(course.getCode())==null){
-            return Result.error().message("未找到该课程");
+        String userIdToken = JwtUtils.getClaimsByToken(token).getSubject();
+        User userToken = userMapper.queryRoleAndStatus(userIdToken);
+        if((userToken.getRole().equals("系统管理员") || userToken.getRole().equals("课程管理员")) && userToken.getStatus().equals("正常")){
+            if (takesMapper.courseByCode(course.getCode())==null){
+                return Result.error().message("未找到该课程");
+            }
+            int success=takesMapper.deleteCourse(course.getCode());
+            if (success==1) {
+                return Result.ok().message("课程删除成功");
+            }
+            return Result.error().message("课程删除失败");
         }
-        int success=takesMapper.deleteCourse(course.getCode());
-        if (success==1) {
-            return Result.ok().message("课程删除成功");
+        else{
+            return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
         }
-        return Result.error().message("课程删除失败");
     }
 
     @ApiOperation("更改课程")
     @PostMapping("/updateCourse")
     public Result updateCourse(@RequestBody Course course, @RequestHeader("Authorization") String token) {
-        if (takesMapper.courseByCode(course.getCode())==null){
-            return Result.error().message("未找到该课程");
+        String userIdToken = JwtUtils.getClaimsByToken(token).getSubject();
+        User userToken = userMapper.queryRoleAndStatus(userIdToken);
+        if((userToken.getRole().equals("系统管理员") || userToken.getRole().equals("课程管理员")) && userToken.getStatus().equals("正常")){
+            if (takesMapper.courseByCode(course.getCode())==null){
+                return Result.error().message("未找到该课程");
+            }
+            if(takesMapper.departByDeptName(course.getDeptName())==null){
+                return Result.error().message("未找到对应学院");
+            }
+            int success=takesMapper.updateCourse(course.getCode(), course.getName(),course.getCredit(), course.getType(),course.getDeptName());
+            if (success==1) {
+                return Result.ok().message("更新成功");
+            }
+            return Result.error().message("更新失败");
         }
-        if(takesMapper.departByDeptName(course.getDeptName())==null){
-            return Result.error().message("未找到对应学院");
+        else{
+            return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
         }
-        int success=takesMapper.updateCourse(course.getCode(), course.getName(),course.getCredit(), course.getType(),course.getDeptName());
-        if (success==1) {
-            return Result.ok().message("更新成功");
-        }
-        return Result.error().message("更新失败");
     }
 
 
     @ApiOperation("增加课程班级")
     @PostMapping("/addCourseClass")
     public Result addCourseClass(@RequestBody CourseClass courseClass, @RequestHeader("Authorization") String token) {
-        if (takesMapper.courseByCode(courseClass.getCode())==null){
-            return Result.error().message("错误课程编号");
+        String userIdToken = JwtUtils.getClaimsByToken(token).getSubject();
+        User userToken = userMapper.queryRoleAndStatus(userIdToken);
+        if((userToken.getRole().equals("系统管理员") || userToken.getRole().equals("课程管理员")) && userToken.getStatus().equals("正常")){
+            if (takesMapper.courseByCode(courseClass.getCode())==null){
+                return Result.error().message("错误课程编号");
+            }
+            if(takesMapper.findClassNumber(courseClass.getClassNumber())!=null){
+                return Result.error().message("已有该班级");
+            }
+            int success=takesMapper.insertCourseClass(courseClass.getClassNumber(),courseClass.getTeacherName(),
+                    courseClass.getCapacity(),courseClass.getSelectedNumber(),courseClass.getIsFull(),courseClass.getCode());
+            if (success==1) {
+                return Result.ok().message("课程班级增加成功");
+            }
+            return Result.error().message("课程班级增加失败");
         }
-        if(takesMapper.findClassNumber(courseClass.getClassNumber())!=null){
-            return Result.error().message("已有该班级");
+        else{
+            return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
         }
-        int success=takesMapper.insertCourseClass(courseClass.getClassNumber(),courseClass.getTeacherName(),
-                courseClass.getCapacity(),courseClass.getSelectedNumber(),courseClass.getIsFull(),courseClass.getCode());
-        if (success==1) {
-            return Result.ok().message("课程班级增加成功");
-        }
-        return Result.error().message("课程班级增加失败");
     }
 
     @ApiOperation("删除课程班级")
     @PostMapping("/deleteCourseClass")
     public Result deleteCourseClass(@RequestBody CourseClass courseClass, @RequestHeader("Authorization") String token) {
-        if(takesMapper.findClassNumber(courseClass.getClassNumber())==null){
-            return Result.error().message("未找到课程班级");
+        String userIdToken = JwtUtils.getClaimsByToken(token).getSubject();
+        User userToken = userMapper.queryRoleAndStatus(userIdToken);
+        if((userToken.getRole().equals("系统管理员") || userToken.getRole().equals("课程管理员")) && userToken.getStatus().equals("正常")){
+            if(takesMapper.findClassNumber(courseClass.getClassNumber())==null){
+                return Result.error().message("未找到课程班级");
+            }
+            int success=takesMapper.deleteCourseClass(courseClass.getClassNumber());
+            if (success==1) {
+                return Result.ok().message("课程班级删除成功");
+            }
+            return Result.error().message("课程班级删除失败");
         }
-        int success=takesMapper.deleteCourseClass(courseClass.getClassNumber());
-        if (success==1) {
-            return Result.ok().message("课程班级删除成功");
+        else{
+            return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
         }
-        return Result.error().message("课程班级删除失败");
     }
 
     @ApiOperation("更改课程班级")
     @PostMapping("/updateCourseClass")
     public Result updateCourseClass(@RequestBody CourseClass courseClass, @RequestHeader("Authorization") String token) {
-        if(takesMapper.findClassNumber(courseClass.getClassNumber())==null){
-            return Result.error().message("未找到课程班级");
+        String userIdToken = JwtUtils.getClaimsByToken(token).getSubject();
+        User userToken = userMapper.queryRoleAndStatus(userIdToken);
+        if((userToken.getRole().equals("系统管理员") || userToken.getRole().equals("课程管理员")) && userToken.getStatus().equals("正常")){
+            if(takesMapper.findClassNumber(courseClass.getClassNumber())==null){
+                return Result.error().message("未找到课程班级");
+            }
+            if (takesMapper.courseByCode(courseClass.getCode())==null){
+                return Result.error().message("错误课程编号");
+            }
+            int success=takesMapper.updateByclassNumber(courseClass.getTeacherName(),courseClass.getCapacity(),courseClass.getSelectedNumber(),courseClass.getIsFull(),courseClass.getClassNumber());
+            if (success==1) {
+                return Result.ok().message("更改成功");
+            }
+            return Result.error().message("更改失败");
         }
-        if (takesMapper.courseByCode(courseClass.getCode())==null){
-            return Result.error().message("错误课程编号");
+        else{
+            return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
         }
-        int success=takesMapper.updateByclassNumber(courseClass.getTeacherName(),courseClass.getCapacity(),courseClass.getSelectedNumber(),courseClass.getIsFull(),courseClass.getClassNumber());
-        if (success==1) {
-            return Result.ok().message("更改成功");
-        }
-        return Result.error().message("更改失败");
     }
 
-
+    //呈现反馈
+    @ApiOperation("显示学生客户端传来的反馈")
+    @GetMapping("/showFeedback")
+    public List<Feedback> showFeedback() {
+        return feedbackMapper.getAllFeedbacks();
+    }
 }
