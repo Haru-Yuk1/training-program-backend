@@ -199,17 +199,19 @@ public class StudentController {
         return Result.ok();
     }
 
-    @ApiOperation("登录后使用token来获取信息(使用学生的身份证号来获取)")
-    @GetMapping("/info2")
-    public Result info2(String idCard) {
-
-        Student student=studentMapper.findByIdCard(idCard);
-        return Result.ok().data("Student",student).message("成功获取学生");
-    }
+//    @ApiOperation("登录后使用token来获取信息(使用学生的身份证号来获取)")
+//    @GetMapping("/info2")
+//    public Result info2(String idCard) {
+//
+//        Student student=studentMapper.findByIdCard(idCard);
+//        return Result.ok().data("Student",student).message("成功获取学生");
+//    }
 
     @ApiOperation("更新信息,要(email，address，idCard)")
     @PostMapping("/updateInfo")
-    public Result updateInfo(@RequestBody Student student) {
+    public Result updateInfo(@RequestBody Student student,@RequestHeader("Authorization") String token) {
+        String StudentIdCard=JwtUtils.getClaimsByToken(token).getSubject();
+        Student studentOld=studentMapper.findByIdCard(StudentIdCard);
         if(studentMapper.findByIdCard(student.getIdCard())==null){
             return Result.error().message("未找到该学生");
         }

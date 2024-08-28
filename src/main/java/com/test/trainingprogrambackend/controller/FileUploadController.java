@@ -41,7 +41,7 @@ public class FileUploadController {
 
     @ApiOperation("上传图片")
     @PostMapping("/uploadImage")
-    public Result upload(MultipartFile image,  String studentid)throws IOException {
+    public Result upload(MultipartFile image,  @RequestHeader("Authorization") String token)throws IOException {
         // 获取图片的原始名称
         System.out.println(image.getOriginalFilename());
         //设置图片新名称
@@ -58,7 +58,9 @@ public class FileUploadController {
 //        System.out.println(path);
 
         //获取token
-        Student student=studentMapper.findByStudentid(studentid);
+        String StudentIdCard=JwtUtils.getClaimsByToken(token).getSubject();
+        Student student=studentMapper.findByIdCard(StudentIdCard);
+
 
         int success =studentMapper.updateImageUrl(imageName, student.getStudentid());
         if(success==1){
@@ -120,8 +122,10 @@ public class FileUploadController {
 
     @ApiOperation("获取上传的图片")
     @GetMapping("/getImage")
-    public ResponseEntity<Resource> getImageByStudentId(String studentid) throws IOException {
-        Student student = studentMapper.findByStudentid(studentid);
+    public ResponseEntity<Resource> getImageByStudentId(@RequestHeader("Authorization") String token) throws IOException {
+
+        String StudentIdCard=JwtUtils.getClaimsByToken(token).getSubject();
+        Student student=studentMapper.findByIdCard(StudentIdCard);
 
         if (student == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
