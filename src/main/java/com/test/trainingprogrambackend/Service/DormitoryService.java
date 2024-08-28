@@ -20,9 +20,9 @@ public class DormitoryService {
     // 后台管理系统操作
         // 分配宿舍操作
     public List<Dormitory> assignDor() {
-        List<Student> studentList = studentMapper.findClassesAndDorStatus();
+        List<Student> studentList = studentMapper.findForDormitory();
         for (Student student : studentList) {
-            if (student.getDorStatus() == 1) {
+            if (student.getDorStatus() == 1 && student.getDorName() == null) {
                 //分配宿舍
                 // 获取对应班级未满宿舍
                 Dormitory dormitory = dormitoryMapper.getByClassesNotNullOne(student.getClasses());
