@@ -29,7 +29,7 @@ spring:
   session:
     store-type: jdbc
 
-axios
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -30,7 +30,7 @@ public class Student {
     private String dorName;
     @TableField("depName")
     private String deptName;
-    private int preference;
+    private String preference;
     private int status;
     @TableField("isFinishSelect")
     private int isFinishSelect;

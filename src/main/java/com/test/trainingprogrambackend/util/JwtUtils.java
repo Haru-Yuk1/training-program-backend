@@ -39,7 +39,6 @@ public class JwtUtils {
                 .compact();
     }
 
-    //生成手机token
 
     //解析token
     public static Claims getClaimsByToken(String token) {

@@ -28,7 +28,7 @@ public interface MessageMapper extends BaseMapper<Message> {
                     SET("content = #{message.content}");
                 }
                 if (message.getPublishDate() != null) {
-                    SET("date = #{message.date}");
+                    SET("publishDate = #{message.publishDate}");
                 }
                 WHERE("title = #{message.originalTitle}");
             }}.toString();

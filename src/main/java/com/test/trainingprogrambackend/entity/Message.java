@@ -15,4 +15,6 @@ public class Message {
 
     @TableField(exist = false)
     private String originalTitle;
+
+
 }

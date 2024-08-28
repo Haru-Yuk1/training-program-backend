@@ -1,9 +1,7 @@
 package com.test.trainingprogrambackend.controller;
 
 import com.test.trainingprogrambackend.Service.TakesService;
-import com.test.trainingprogrambackend.entity.Course;
-import com.test.trainingprogrambackend.entity.CourseClassDTO;
-import com.test.trainingprogrambackend.entity.Takes;
+import com.test.trainingprogrambackend.entity.*;
 import com.test.trainingprogrambackend.mapper.CourseMapper;
 import com.test.trainingprogrambackend.mapper.TakesMapper;
 import com.test.trainingprogrambackend.util.Result;
@@ -95,5 +93,6 @@ public class CourseController {
     public Result deleteTakes(@RequestBody Takes takes) {
         return  takesService.deleteTakesOperation(takes.getStudentid(),takes.getClassNumber());
     }
+
 
 }

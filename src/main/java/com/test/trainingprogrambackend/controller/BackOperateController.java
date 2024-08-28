@@ -1,10 +1,9 @@
 package com.test.trainingprogrambackend.controller;
 
-import com.test.trainingprogrambackend.entity.Message;
-import com.test.trainingprogrambackend.entity.Student;
-import com.test.trainingprogrambackend.entity.User;
+import com.test.trainingprogrambackend.entity.*;
 import com.test.trainingprogrambackend.mapper.MessageMapper;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
+import com.test.trainingprogrambackend.mapper.TakesMapper;
 import com.test.trainingprogrambackend.mapper.UserMapper;
 import com.test.trainingprogrambackend.util.JwtUtils;
 import com.test.trainingprogrambackend.util.MD5Util;
@@ -29,6 +28,9 @@ public class BackOperateController {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private TakesMapper takesMapper;
 
     //消息操作
     @ApiOperation("注意不需要传送 date 和 id，传递 title 和 content")
@@ -200,5 +202,98 @@ public class BackOperateController {
 
         return Result.ok().data("token",token).message("登录成功");
     }
+
+
+
+    @ApiOperation("增加课程")
+    @PostMapping("/addCourse")
+    public Result addCourse(@RequestBody Course course, @RequestHeader("Authorization") String token) {
+        Department department=takesMapper.departByDeptName(course.getDeptName());
+        if(department==null){
+            return Result.error().message("未找到对应学院");
+        }
+        int success=takesMapper.insertCourse(course.getCode(),course.getName(),course.getCredit(), course.getType(), course.getDeptName());
+        if (success==1) {
+            return Result.ok().message("课程增加成功");
+        }
+        return Result.error().message("课程增加失败");
+    }
+
+    @ApiOperation("删除课程")
+    @PostMapping("/deleteCourse")
+    public Result deleteCourse(@RequestBody Course course, @RequestHeader("Authorization") String token) {
+        if (takesMapper.courseByCode(course.getCode())==null){
+            return Result.error().message("未找到该课程");
+        }
+        int success=takesMapper.deleteCourse(course.getCode());
+        if (success==1) {
+            return Result.ok().message("课程删除成功");
+        }
+        return Result.error().message("课程删除失败");
+    }
+
+    @ApiOperation("更改课程")
+    @PostMapping("/updateCourse")
+    public Result updateCourse(@RequestBody Course course, @RequestHeader("Authorization") String token) {
+        if (takesMapper.courseByCode(course.getCode())==null){
+            return Result.error().message("未找到该课程");
+        }
+        if(takesMapper.departByDeptName(course.getDeptName())==null){
+            return Result.error().message("未找到对应学院");
+        }
+        int success=takesMapper.updateCourse(course.getCode(), course.getName(),course.getCredit(), course.getType(),course.getDeptName());
+        if (success==1) {
+            return Result.ok().message("更新成功");
+        }
+        return Result.error().message("更新失败");
+    }
+
+
+    @ApiOperation("增加课程班级")
+    @PostMapping("/addCourseClass")
+    public Result addCourseClass(@RequestBody CourseClass courseClass, @RequestHeader("Authorization") String token) {
+        if (takesMapper.courseByCode(courseClass.getCode())==null){
+            return Result.error().message("错误课程编号");
+        }
+        if(takesMapper.findClassNumber(courseClass.getClassNumber())!=null){
+            return Result.error().message("已有该班级");
+        }
+        int success=takesMapper.insertCourseClass(courseClass.getClassNumber(),courseClass.getTeacherName(),
+                courseClass.getCapacity(),courseClass.getSelectedNumber(),courseClass.getIsFull(),courseClass.getCode());
+        if (success==1) {
+            return Result.ok().message("课程班级增加成功");
+        }
+        return Result.error().message("课程班级增加失败");
+    }
+
+    @ApiOperation("删除课程班级")
+    @PostMapping("/deleteCourseClass")
+    public Result deleteCourseClass(@RequestBody CourseClass courseClass, @RequestHeader("Authorization") String token) {
+        if(takesMapper.findClassNumber(courseClass.getClassNumber())==null){
+            return Result.error().message("未找到课程班级");
+        }
+        int success=takesMapper.deleteCourseClass(courseClass.getClassNumber());
+        if (success==1) {
+            return Result.ok().message("课程班级删除成功");
+        }
+        return Result.error().message("课程班级删除失败");
+    }
+
+    @ApiOperation("更改课程班级")
+    @PostMapping("/updateCourseClass")
+    public Result updateCourseClass(@RequestBody CourseClass courseClass, @RequestHeader("Authorization") String token) {
+        if(takesMapper.findClassNumber(courseClass.getClassNumber())==null){
+            return Result.error().message("未找到课程班级");
+        }
+        if (takesMapper.courseByCode(courseClass.getCode())==null){
+            return Result.error().message("错误课程编号");
+        }
+        int success=takesMapper.updateByclassNumber(courseClass.getTeacherName(),courseClass.getCapacity(),courseClass.getSelectedNumber(),courseClass.getIsFull(),courseClass.getClassNumber());
+        if (success==1) {
+            return Result.ok().message("更改成功");
+        }
+        return Result.error().message("更改失败");
+    }
+
 
 }
