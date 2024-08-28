@@ -120,6 +120,9 @@ public class FileUploadController {
 //    }
 
 
+
+
+
     @ApiOperation("获取上传的图片")
     @GetMapping("/getImage")
     public ResponseEntity<Resource> getImageByStudentId(@RequestHeader("Authorization") String token) throws IOException {
@@ -149,4 +152,31 @@ public class FileUploadController {
                 .contentType(MediaType.IMAGE_JPEG) // 根据实际图片类型设置
                 .body(resource);
     }
+
+    @ApiOperation("获取室友的图片")
+    @GetMapping("/getImageById")
+    public ResponseEntity<Resource> getImageById(String studentid) throws IOException {
+        Student student=studentMapper.findByStudentid(studentid);
+        if (student == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        String imageName = student.getImageUrl();
+        if (imageName == null || imageName.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        File file = new File(uploadPath + imageName);
+        if (!file.exists()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Resource resource = new UrlResource(file.toURI());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // 根据实际图片类型设置
+                .body(resource);
+    }
+
 }

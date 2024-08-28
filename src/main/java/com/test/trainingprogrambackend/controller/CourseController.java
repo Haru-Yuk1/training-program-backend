@@ -37,8 +37,8 @@ public class CourseController {
     }
 
     @ApiOperation("通过名字获取课程")
-    @GetMapping("/getByName")
-    public List<CourseClassDTO> getCourseByName(String name) {
+    @PostMapping("/getByName")
+    public List<CourseClassDTO> getCourseByName(@RequestParam String name) {
         List<CourseClassDTO> courseClassDTOS=courseMapper.getCourseByName(name);
         return courseClassDTOS;
     }
