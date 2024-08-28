@@ -212,11 +212,18 @@ public class StudentController {
     public Result updateInfo(@RequestBody Student student,@RequestHeader("Authorization") String token) {
         String StudentIdCard=JwtUtils.getClaimsByToken(token).getSubject();
         Student studentOld=studentMapper.findByIdCard(StudentIdCard);
-        if(studentMapper.findByIdCard(student.getIdCard())==null){
+
+        if(studentOld==null){
             return Result.error().message("未找到该学生");
         }
+
+//        if(studentMapper.findByIdCard(student.getIdCard())==null){
+//            return Result.error().message("未找到该学生");
+//        }
 //        int success=studentMapper.updateStudentInfo(student.getPhone(),student.getEmail(),student.getAddress(),student.getIdCard());
-        int success=studentMapper.updateStudentInfo(student.getEmail(),student.getAddress(),student.getIdCard());
+
+
+        int success=studentMapper.updateStudentInfo(student.getEmail(),student.getAddress(),StudentIdCard);
         if(success==1){
             return Result.ok().message("更新成功");
         }

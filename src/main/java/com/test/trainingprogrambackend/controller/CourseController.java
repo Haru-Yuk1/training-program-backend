@@ -3,7 +3,9 @@ package com.test.trainingprogrambackend.controller;
 import com.test.trainingprogrambackend.Service.TakesService;
 import com.test.trainingprogrambackend.entity.*;
 import com.test.trainingprogrambackend.mapper.CourseMapper;
+import com.test.trainingprogrambackend.mapper.StudentMapper;
 import com.test.trainingprogrambackend.mapper.TakesMapper;
+import com.test.trainingprogrambackend.util.JwtUtils;
 import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +26,8 @@ public class CourseController {
     @Autowired
     private TakesMapper takesMapper;
 
+    @Autowired
+    private StudentMapper studentMapper;
 
     @ApiOperation("直接获取所有课程")
     @GetMapping("/getAll")
@@ -34,9 +38,9 @@ public class CourseController {
 
     @ApiOperation("通过名字获取课程")
     @GetMapping("/getByName")
-    public List<Course> getCourseByName(String name) {
-        List<Course> courses=courseMapper.getCourseByName(name);
-        return courses;
+    public List<CourseClassDTO> getCourseByName(String name) {
+        List<CourseClassDTO> courseClassDTOS=courseMapper.getCourseByName(name);
+        return courseClassDTOS;
     }
     @ApiOperation("通过编号获取课程")
     @GetMapping("/getByCode")
@@ -73,15 +77,21 @@ public class CourseController {
 //    }
     @ApiOperation("通过学生Id来获取课程")
     @GetMapping("/getBystudentId")
-    public List<CourseClassDTO> getCourseByStudentId(String studentId) {
-        List<CourseClassDTO> courseClassDTOS=courseMapper.courseClassByStudentId(studentId);
+    public List<CourseClassDTO> getCourseByStudentId(@RequestHeader("Authorization") String token) {
+        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
+
+        Student student=studentMapper.findByIdCard(StudentIdCard);
+        List<CourseClassDTO> courseClassDTOS=courseMapper.courseClassByStudentId(student.getStudentid());
         return courseClassDTOS;
     }
 
     @ApiOperation("选课操作")
     @PostMapping("/takeClass")
-    public Result updateTakes(@RequestBody Takes takes) {
-        return  takesService.takesOperation(takes.getStudentid(),takes.getClassNumber());
+    public Result updateTakes(@RequestHeader("Authorization") String token, @RequestParam String classNumber) {
+        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
+
+        Student student=studentMapper.findByIdCard(StudentIdCard);
+        return  takesService.takesOperation(student.getStudentid(),classNumber);
     }
     @ApiOperation("获取选课表")
     @GetMapping("/getTakes")
@@ -90,8 +100,11 @@ public class CourseController {
     }
     @ApiOperation("退课操作")
     @PostMapping("/dropClass")
-    public Result deleteTakes(@RequestBody Takes takes) {
-        return  takesService.deleteTakesOperation(takes.getStudentid(),takes.getClassNumber());
+    public Result deleteTakes(@RequestHeader("Authorization") String token, @RequestParam String classNumber) {
+        String StudentIdCard= JwtUtils.getClaimsByToken(token).getSubject();
+
+        Student student=studentMapper.findByIdCard(StudentIdCard);
+        return  takesService.deleteTakesOperation(student.getStudentid(),classNumber);
     }
 
 

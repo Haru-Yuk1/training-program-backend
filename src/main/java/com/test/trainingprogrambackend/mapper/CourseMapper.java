@@ -16,8 +16,8 @@ public interface CourseMapper {
     @Select("select * from course")
     List<Course> selectAll();
     //通过课程名字选择课程
-    @Select("select * from course where name=#{name}")
-    List<Course> getCourseByName(String name);
+    @Select("select * from course natural join courseclass where name=#{name}")
+    List<CourseClassDTO> getCourseByName(String name);
     //通过课程编码选择课程
     @Select("select * from course where code=#{code}")
     List<Course> getCourseByCode(String code);
