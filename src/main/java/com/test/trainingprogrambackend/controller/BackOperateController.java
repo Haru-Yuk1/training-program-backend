@@ -1,5 +1,6 @@
 package com.test.trainingprogrambackend.controller;
 
+import com.test.trainingprogrambackend.Service.DormitoryService;
 import com.test.trainingprogrambackend.entity.*;
 import com.test.trainingprogrambackend.mapper.*;
 import com.test.trainingprogrambackend.util.JwtUtils;
@@ -31,6 +32,9 @@ public class BackOperateController {
 
     @Autowired
     private FeedbackMapper feedbackMapper;
+
+    @Autowired
+    private DormitoryService dormitoryService;
 
     //消息操作
     @ApiOperation("注意不需要传送 date 和 id，传递 title 和 content")
@@ -339,6 +343,66 @@ public class BackOperateController {
         }
         else{
             return Result.error().message("用户不是课程或系统管理员或用户状态不是正常");
+        }
+    }
+
+    //宿舍操作
+    // 后台管理系统接口
+    @ApiOperation("后台分配宿舍并返回分配结果")
+    @GetMapping("/dor/assignDor")
+    public Result assignDor(@RequestHeader("Authorization") String token){
+        String userId = JwtUtils.getClaimsByToken(token).getSubject();
+        User user = userMapper.queryRoleAndStatus(userId);
+        if((user.getRole().equals("宿舍管理员") || user.getRole().equals("系统管理员")) && user.getStatus().equals("正常")){
+            List<Dormitory> list = dormitoryService.assignDor();
+            if(list != null){
+                return Result.ok().data("宿舍信息", list).message("分配成功");
+            }
+            else{
+                return Result.error().message("分配失败，宿舍信息为空");
+            }
+        }
+        else{
+            return Result.error().message("用户不是宿舍或系统管理员，或者用户状态不是正常");
+        }
+    }
+
+    @ApiOperation("后台获取对应班级未满宿舍信息")
+    @GetMapping("/dor/getNotFullDorByClasses")
+    public List<Dormitory> getNotFullDorByClasses(@RequestParam String classes){
+        return dormitoryService.findNotFullDorByClasses(classes);
+    }
+
+    @ApiOperation("后台刷新宿舍信息")
+    @GetMapping("/dor/refreshDor")
+    public List<Dormitory> refreshDor(){
+        return dormitoryService.refreshDor();
+    }
+
+    @ApiOperation("后台调整学生至非满宿舍")
+    @PostMapping("/dor/adjustByNotFullDor")
+    public Result adjustByNotNullDor(@RequestParam String studentid, @RequestParam String dorName, @RequestHeader("Authorization") String token){
+        String userId = JwtUtils.getClaimsByToken(token).getSubject();
+        User user = userMapper.queryRoleAndStatus(userId);
+        if((user.getRole().equals("宿舍管理员") || user.getRole().equals("系统管理员")) && user.getStatus().equals("正常")){
+            return dormitoryService.adjustDorByNotFullDor(studentid, dorName) == 1 ? Result.ok().message("调整成功") : Result.error().message("调整失败");
+        }
+        else{
+            return Result.error().message("用户不是宿舍或系统管理员，或者用户状态不是正常");
+        }
+    }
+
+
+    @ApiOperation("后台交换学生宿舍")
+    @PostMapping("/dor/adjustByExchange")
+    public Result adjustByExchange(@RequestParam String studentid1, @RequestParam String studentid2, @RequestHeader("Authorization") String token) {
+        String userId = JwtUtils.getClaimsByToken(token).getSubject();
+        User user = userMapper.queryRoleAndStatus(userId);
+        if((user.getRole().equals("宿舍管理员") || user.getRole().equals("系统管理员")) && user.getStatus().equals("正常")){
+            return dormitoryService.adjustDorByExchange(studentid1, studentid2) == 1 ? Result.ok().message("交换成功") : Result.error().message("交换失败");
+        }
+        else{
+            return Result.error().message("用户不是宿舍或系统管理员，或者用户状态不是正常");
         }
     }
 
