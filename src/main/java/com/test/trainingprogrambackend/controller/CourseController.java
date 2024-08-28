@@ -3,6 +3,7 @@ package com.test.trainingprogrambackend.controller;
 import com.test.trainingprogrambackend.Service.TakesService;
 import com.test.trainingprogrambackend.entity.*;
 import com.test.trainingprogrambackend.mapper.CourseMapper;
+import com.test.trainingprogrambackend.mapper.SectionMapper;
 import com.test.trainingprogrambackend.mapper.TakesMapper;
 import com.test.trainingprogrambackend.util.Result;
 import io.swagger.annotations.Api;
@@ -23,6 +24,8 @@ public class CourseController {
     private TakesService takesService;
     @Autowired
     private TakesMapper takesMapper;
+    @Autowired
+    private SectionMapper sectionMapper;
 
 
     @ApiOperation("直接获取所有课程")
@@ -94,5 +97,9 @@ public class CourseController {
         return  takesService.deleteTakesOperation(takes.getStudentid(),takes.getClassNumber());
     }
 
-
+    @ApiOperation("通过课程班级号获得时间段")
+    @GetMapping("/getTimeByClassNumber")
+    public List<Section> getTimeByClassNumber(String classNumber) {
+        return sectionMapper.getAllSections(classNumber);
+    }
 }
