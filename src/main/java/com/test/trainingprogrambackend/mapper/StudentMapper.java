@@ -121,8 +121,8 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("select * from student where name=#{name}")
     Student findByName(String name);
 
-    @Select("select classes, dorStatus, studentid from student")
-    List<Student> findClassesAndDorStatus();
+    @Select("select classes, dorStatus, studentid, dorName from student where dorStatus=1 and dorName IS NULL")
+    List<Student> findForDormitory();
 
     @Select("select * from student where dorName=#{dorName}")
     List<Student> findAllByDorName();

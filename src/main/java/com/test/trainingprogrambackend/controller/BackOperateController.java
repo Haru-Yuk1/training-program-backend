@@ -364,7 +364,7 @@ public class BackOperateController {
 
     @ApiOperation("后台获取对应班级未满宿舍信息")
     @GetMapping("/dor/getNotFullDorByClasses")
-    public List<Dormitory> getNotFullDorByClasses(@RequestParam String classes){
+    public List<Dormitory> getNotFullDorByClasses(String classes){
         return dormitoryService.findNotFullDorByClasses(classes);
     }
 
