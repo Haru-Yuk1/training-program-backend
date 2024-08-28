@@ -4,6 +4,7 @@ import com.test.trainingprogrambackend.Service.TakesService;
 import com.test.trainingprogrambackend.entity.*;
 import com.test.trainingprogrambackend.mapper.CourseMapper;
 import com.test.trainingprogrambackend.mapper.StudentMapper;
+import com.test.trainingprogrambackend.mapper.SectionMapper;
 import com.test.trainingprogrambackend.mapper.TakesMapper;
 import com.test.trainingprogrambackend.util.JwtUtils;
 import com.test.trainingprogrambackend.util.Result;
@@ -25,6 +26,8 @@ public class CourseController {
     private TakesService takesService;
     @Autowired
     private TakesMapper takesMapper;
+    @Autowired
+    private SectionMapper sectionMapper;
 
     @Autowired
     private StudentMapper studentMapper;
@@ -127,5 +130,9 @@ public class CourseController {
 
     }
 
-
+    @ApiOperation("通过课程班级号获得时间段")
+    @GetMapping("/getTimeByClassNumber")
+    public List<Section> getTimeByClassNumber(String classNumber) {
+        return sectionMapper.getAllSections(classNumber);
+    }
 }

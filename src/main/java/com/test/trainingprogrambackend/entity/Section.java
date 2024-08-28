@@ -6,7 +6,7 @@ import lombok.Data;
 public class Section {
     private String classNumber;
     private String classroom;
+    private short week;
     private String day;
-    private int timeId;
-    private int week;
+    private String timeId;
 }
