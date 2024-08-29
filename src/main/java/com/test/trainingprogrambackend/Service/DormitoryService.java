@@ -22,17 +22,18 @@ public class DormitoryService {
     public List<Dormitory> assignDor() {
         List<Student> studentList = studentMapper.findForDormitory();
         for (Student student : studentList) {
-            if (student.getDorStatus() == 1 && student.getDorName() == null) {
-                //分配宿舍
-                // 获取对应班级未满宿舍
-                Dormitory dormitory = dormitoryMapper.getByClassesNotNullOne(student.getClasses());
-                // 更新学生宿舍信息
-                studentMapper.updateDorNameById(student.getStudentid(), dormitory.getDorName());
-                // 更新宿舍人数
-                dormitoryMapper.updatePeoNumberAdd(dormitory.getDorName());
-                if (dormitory.getPeoNumber() + 1 == 4) {
-                    dormitoryMapper.updateFull(dormitory.getDorName());
-                }
+            //分配宿舍
+            // 获取对应班级对应性别的未满宿舍
+            Dormitory dormitory = dormitoryMapper.getByClassesNotNullOne(student.getClasses(), student.getGender());
+            if (dormitory.getGender() == null) {
+                dormitoryMapper.updateGender(student.getGender(), dormitory.getDorName());
+            }
+            // 更新学生宿舍信息
+            studentMapper.updateDorNameById(student.getStudentid(), dormitory.getDorName());
+            // 更新宿舍人数
+            dormitoryMapper.updatePeoNumberAdd(dormitory.getDorName());
+            if (dormitory.getPeoNumber() + 1 == 4) {
+                dormitoryMapper.updateFull(dormitory.getDorName());
             }
         }
         return dormitoryMapper.getDormitoryWithStudent();

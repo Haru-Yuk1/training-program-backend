@@ -8,6 +8,6 @@ import java.util.List;
 
 @Mapper
 public interface SectionMapper {
-    @Select("SELECT classroom, week, day, timeld FROM section where classNumber = #{classNumber}")
+    @Select("SELECT classroom, week, day, timeId FROM section where classNumber = #{classNumber}")
     List<Section> getAllSections(String classNumber);
 }

@@ -8,7 +8,7 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data // 可能会有问题，再看
+@Data
 @TableName("student")
 @ApiModel("这是Dormitory实体类")
 public class Dormitory {
@@ -19,6 +19,7 @@ public class Dormitory {
     private short peoNumber;
     private short isFull;
     private String areaName;
+    private String gender;
 
     @TableField(exist = false)
     private List<Student> students;//学生姓名
