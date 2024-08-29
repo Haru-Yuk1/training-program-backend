@@ -24,7 +24,7 @@ public class Message {
         request.setSysAction("SendSms");
         request.putQueryParameter("RegionId", "cn-hangzhou");
         request.putQueryParameter("PhoneNumbers", u_phone);
-        request.putQueryParameter("SignName", "阿里云短信测试");
+        request.putQueryParameter("SignName", "Hiya新生报到平台");
         request.putQueryParameter("TemplateCode", "SMS_154950909");
         request.putQueryParameter("TemplateParam", "{\"code\":" + message + "}");
         try {

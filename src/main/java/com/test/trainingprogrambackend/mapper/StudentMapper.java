@@ -151,6 +151,15 @@ public interface StudentMapper extends BaseMapper<Student> {
     int registerByEmail(@Param("idCard") String idCard,@Param("email") String email, @Param("password") String password, @Param("status") int status);
 
     //用手机注册
+
+    //通过email找学生
+    @Select("select * from student where email=#{email}")
+    Student selectByEmail(String email);
+
+    //通过phone找学生
+    @Select("select * from student where phone=#{phone}")
+    Student selectByPhone(String phone);
+
     @Update("update student set password=#{password},phone=#{phone},status=#{status} where idCard=#{idCard}")
     int registerByPhone(@Param("idCard") String idCard,@Param("phone") String phone, @Param("password") String password, @Param("status") int status);
 

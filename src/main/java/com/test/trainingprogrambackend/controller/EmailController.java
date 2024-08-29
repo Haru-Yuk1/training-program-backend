@@ -21,10 +21,10 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
+
     @ApiOperation("发送邮箱验证码")
     @GetMapping("/sendCode")
     public Result sendCode(String to) {
-
         if(to==null){
             return Result.error().message("邮箱为空");
         }

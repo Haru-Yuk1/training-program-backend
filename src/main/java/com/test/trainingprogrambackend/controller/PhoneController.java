@@ -35,7 +35,7 @@ public class PhoneController {
             String token= JwtUtils.generateEmailToken(phone,authcode);
             System.out.println(authcode);
             System.out.println(token);
-//            Message.messagePost(phone,authcode);
+            Message.messagePost(phone,authcode);
             return Result.ok().data("token",token).message("短信验证码发送成功");
         }catch(Exception e){
             e.printStackTrace();

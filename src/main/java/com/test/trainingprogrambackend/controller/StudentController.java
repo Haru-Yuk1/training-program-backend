@@ -133,11 +133,37 @@ public class StudentController {
 
         return Result.ok().data("token",token);
     }
+
+
+    @ApiOperation("用邮箱+验证码登录的check")
+    @PostMapping("/checkEmail")
+    public Result checkEmail(@RequestParam String email) {
+        if(studentMapper.selectByEmail(email)==null){
+            return Result.error().message("未找到该邮箱");
+        }
+        return Result.ok().message("找到该邮箱");
+    }
+
+    @ApiOperation("用电话+验证码登录的check")
+    @PostMapping("/checkPhone")
+    public Result checkPhone(@RequestParam String phone) {
+        if(studentMapper.selectByEmail(phone)==null){
+            return Result.error().message("未找到该邮箱");
+        }
+        return Result.ok().message("找到该邮箱");
+    }
     @ApiOperation("通过邮箱+验证码登录（会创建一个token，使用info时header要返回token）")
     @PostMapping("/loginByEmailAndCode")
     public Result loginByEmailAndCode(@RequestParam String email) {
+
+        if(studentMapper.selectByEmail(email)==null){
+            return Result.error().message("未找到该邮箱");
+        }
+
         Student student=studentMapper.loginByEmailAndCode(email);
+
         String token = JwtUtils.generateToken(student.getIdCard());
+
 
         return Result.ok().data("token",token);
     }
@@ -145,7 +171,12 @@ public class StudentController {
     @ApiOperation("通过手机+验证码登录（会创建一个token，使用info时header要返回token）")
     @PostMapping("/loginByPhoneAndCode")
     public Result loginByPhoneAndCode(@RequestParam String phone) {
-        Student student=studentMapper.loginByEmailAndCode(phone);
+        if(studentMapper.selectByEmail(phone)==null){
+            return Result.error().message("未找到该电话");
+        }
+
+        Student student=studentMapper.loginByPhoneAndCode(phone);
+
         String token = JwtUtils.generateToken(student.getIdCard());
 
         return Result.ok().data("token",token);

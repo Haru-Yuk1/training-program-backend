@@ -8,5 +8,5 @@ public class Section {
     private String classroom;
     private short week;
     private String day;
-    private String timeId;
+    private short timeId;
 }
