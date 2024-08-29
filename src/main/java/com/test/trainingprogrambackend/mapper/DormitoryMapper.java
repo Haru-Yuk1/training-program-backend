@@ -9,8 +9,8 @@ import java.util.Map;
 
 @Mapper
 public interface DormitoryMapper extends BaseMapper<Dormitory> {
-    @Select("select dorName, classes, peoNumber from dormitory where classes = #{classes} and isFull = 0 limit 1")
-    Dormitory getByClassesNotNullOne(String classes);
+    @Select("select dorName, classes, peoNumber, gender from dormitory where classes = #{classes} and isFull = 0 and (gender = #{gender} or gender IS NULL) limit 1")
+    Dormitory getByClassesNotNullOne(String classes, String gender);
 
     @Select("select dorName, classes, peoNumber from dormitory where classes = #{classes} and isFull = 0")
     List<Dormitory> getByClassesNotNullAll(String classes);
@@ -37,6 +37,9 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
 
     @Update("update dormitory set peoNumber = peoNumber - 1 where dorName = #{dorName}")
     int updatePeoNumberMinus(String dorName);
+
+    @Update("update dormitory set gender = #{gender} where dorName = #{dorName}")
+    int updateGender(String gender, String dorName);
 
     @Select("select * from dormitory")
     @Results({
