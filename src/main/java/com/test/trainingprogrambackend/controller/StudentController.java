@@ -33,7 +33,7 @@ public class StudentController {
 //        System.out.println(students);
 //        return students;
 //    }
-    @ApiOperation("检测是否有身份证")
+    @ApiOperation("检测是否有身份证（如果已被激活就返回已激活）")
     @PostMapping("/checkIdCard")
     public Result checkIdCard(@RequestParam String IdCard) {
         Student student=studentMapper.findByIdCard(IdCard);
@@ -46,7 +46,7 @@ public class StudentController {
         return Result.ok().message("检测到你的身份证").code(20000);
     }
 
-    @ApiOperation("检测是否有身份证")
+    @ApiOperation("检测是否有身份证（如果有就返回学生信息）")
     @PostMapping("/checkIdCard2")
     public Result checkIdCard2(@RequestParam String IdCard) {
         Student student=studentMapper.findByIdCard(IdCard);
@@ -58,7 +58,7 @@ public class StudentController {
     }
 
 
-    @ApiOperation("用身份证激活账户(同时更新邮箱、密码、激活状态)")
+    @ApiOperation("用身份证+邮箱激活账户(同时更新邮箱、密码、激活状态)")
     @PostMapping("/registerByEmail")
     public Result registerStudentByEmail(@RequestParam String IdCard,@RequestParam String email,@RequestParam String password) {
         Student student=studentMapper.findByIdCard(IdCard);
@@ -68,7 +68,7 @@ public class StudentController {
         if(student.getStatus()==1){
             return Result.error().message("该账号已被激活").code(20002);
         }
-        if(student.getEmail()!=null&& student.getEmail().isEmpty()){
+        if(studentMapper.selectByEmail(email)!=null){
             return Result.error().message("该邮箱已被注册").code(20003);
         }
         //加密密码
@@ -81,7 +81,7 @@ public class StudentController {
         return  Result.error().message("账号激活失败").code(20001);
     }
 
-    @ApiOperation("用电话更新")
+    @ApiOperation("用身份证+电话激活账户")
     @PostMapping("/registerByPhone")
     public Result registerStudentByPhone(@RequestParam String IdCard,@RequestParam String phone,@RequestParam String password) {
 
@@ -92,7 +92,7 @@ public class StudentController {
         if(student.getStatus()==1){
             return Result.error().message("该账号已被激活").code(20002);
         }
-        if(student.getPhone()!=null && student.getPhone().isEmpty()){
+        if(studentMapper.selectByPhone(phone)!=null){
             return Result.error().message("该电话已被注册").code(20003);
         }
         //加密密码
@@ -147,10 +147,10 @@ public class StudentController {
     @ApiOperation("用电话+验证码登录的check")
     @PostMapping("/checkPhone")
     public Result checkPhone(@RequestParam String phone) {
-        if(studentMapper.selectByEmail(phone)==null){
-            return Result.error().message("未找到该邮箱");
+        if(studentMapper.selectByPhone(phone)==null){
+            return Result.error().message("未找到该电话");
         }
-        return Result.ok().message("找到该邮箱");
+        return Result.ok().message("找到该电话");
     }
     @ApiOperation("通过邮箱+验证码登录（会创建一个token，使用info时header要返回token）")
     @PostMapping("/loginByEmailAndCode")
@@ -204,6 +204,7 @@ public class StudentController {
         }
         return Result.error().message("修改失败");
     }
+
     @ApiOperation("忘记密码通过手机找回")
     @PostMapping("/forgetPasswordByPhone")
     public Result forgetPasswordByPhone(@RequestParam String phone,@RequestParam String password) {

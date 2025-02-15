@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Message {
     public static void messagePost(String u_phone, String message) {
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI5t5YjEmq7xeKEipyeYa5", "GPV5N2I0gxuntZ6bx4hNc1kJu4vIkd");
+//        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "accessKeyId", "secret");
+        DefaultProfile profile = null;
         IAcsClient client = new DefaultAcsClient(profile);
 
         CommonRequest request = new CommonRequest();
@@ -24,7 +25,7 @@ public class Message {
         request.setSysAction("SendSms");
         request.putQueryParameter("RegionId", "cn-hangzhou");
         request.putQueryParameter("PhoneNumbers", u_phone);
-        request.putQueryParameter("SignName", "Hiya新生报到平台");
+        request.putQueryParameter("SignName", "阿里云短信测试");
         request.putQueryParameter("TemplateCode", "SMS_154950909");
         request.putQueryParameter("TemplateParam", "{\"code\":" + message + "}");
         try {
